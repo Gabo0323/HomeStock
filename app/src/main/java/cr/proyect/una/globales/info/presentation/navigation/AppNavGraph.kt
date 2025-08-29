@@ -1,7 +1,5 @@
 package cr.proyect.una.globales.info.presentation.navigation
 
-
-import LoginScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -61,35 +59,20 @@ fun AppNavGraph(
             )
         }
 
-        composable(NavRoute.Materias.route) {
-            MateriasScreen(modifier = modifier)
-        }
-
-        composable(NavRoute.Calendario.route) {
-            CalendarioScreen(modifier = modifier)
-        }
+        composable(NavRoute.Materias.route) { MateriasScreen(modifier = modifier) }
+        composable(NavRoute.Calendario.route) { CalendarioScreen(modifier = modifier) }
 
         composable(NavRoute.Settings.route) {
-            ConfiguracionScreen(
-                onLogout = onLogout,
-                modifier = modifier
-            )
+            ConfiguracionScreen(onLogout = onLogout, modifier = modifier)
         }
-
+        // Si no quieres duplicar "Configuración", elimina esta ruta:
         composable(NavRoute.Configuracion.route) {
-            ConfiguracionScreen(
-                onLogout = onLogout,
-                modifier = modifier
-            )
+            ConfiguracionScreen(onLogout = onLogout, modifier = modifier)
         }
 
         composable(NavRoute.TaskDetail.route) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
-            TaskDetailScreen(
-                vm = vm,
-                taskId = id,
-                modifier = modifier
-            )
+            TaskDetailScreen(vm = vm, taskId = id, modifier = modifier)
         }
     }
 }
