@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import cr.proyect.una.globales.info.presentation.ui.screens.*
+import cr.proyect.una.globales.info.presentation.ui.screens.* // Home/TaskList/Materias/Calendario/Login/Register/Config/Detail
 import cr.proyect.una.globales.info.presentation.viewmodel.TaskViewModel
 
 @Composable
@@ -21,11 +21,13 @@ fun AppNavGraph(
     val vm: TaskViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = start) {
+
+        // --- Auth ---
         composable(NavRoute.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
                     onLoggedIn()
-                    navController.navigate(NavRoute.Home.route) {
+                    navController.navigate(NavRoute.Inventory.route) {
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -43,36 +45,41 @@ fun AppNavGraph(
             }
         }
 
-        composable(NavRoute.Home.route) {
-            HomeScreen(
-                onSeeAllTasks = { navController.navigate(NavRoute.Tasks.route) },
-                onOpenTask = { id -> navController.navigate(NavRoute.TaskDetail.build(id)) },
+        // --- Top-level (BottomBar) ---
+        composable(NavRoute.Inventory.route) {
+            HomeScreen( // si luego renombraste a InventoryScreen, cambia aquí el nombre de la función
+                onSeeAllTasks = { navController.navigate(NavRoute.ShoppingList.route) },
+                onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
                 modifier = modifier
             )
         }
 
-        composable(NavRoute.Tasks.route) {
-            TaskListScreen(
+        composable(NavRoute.ShoppingList.route) {
+            TaskListScreen( // si luego renombraste a ShoppingListScreen, cambia aquí el nombre de la función
                 vm = vm,
-                onOpenTask = { id -> navController.navigate(NavRoute.TaskDetail.build(id)) },
+                onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
                 modifier = modifier
             )
         }
 
-        composable(NavRoute.Materias.route) { MateriasScreen(modifier = modifier) }
-        composable(NavRoute.Calendario.route) { CalendarioScreen(modifier = modifier) }
+        composable(NavRoute.History.route) {
+            MateriasScreen( // si luego renombraste a HistoryScreen, cambia aquí el nombre
+                modifier = modifier
+            )
+        }
+
+        composable(NavRoute.Compare.route) {
+            CalendarioScreen( // si luego renombraste a CompareScreen, cambia aquí el nombre
+                modifier = modifier
+            )
+        }
 
         composable(NavRoute.Settings.route) {
+            // Usa el que tengas: ConfiguracionScreen o SettingsScreen
             ConfiguracionScreen(onLogout = onLogout, modifier = modifier)
-        }
-        // Si no quieres duplicar "Configuración", elimina esta ruta:
-        composable(NavRoute.Configuracion.route) {
-            ConfiguracionScreen(onLogout = onLogout, modifier = modifier)
+            // Si ya renombraste: SettingsScreen(onLogout = onLogout, modifier = modifier)
         }
 
-        composable(NavRoute.TaskDetail.route) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
-            TaskDetailScreen(vm = vm, taskId = id, modifier = modifier)
-        }
+
     }
 }

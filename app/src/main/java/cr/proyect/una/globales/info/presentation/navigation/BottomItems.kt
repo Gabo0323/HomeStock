@@ -15,9 +15,29 @@ data class BottomItem(
 )
 
 val bottomItems: List<BottomItem> = listOf(
-    BottomItem(NavRoute.Home.route,        "Inventario",       Icons.Filled.Home),
-    BottomItem(NavRoute.Tasks.route,       "Lista de compras", Icons.Filled.List),
-    BottomItem(NavRoute.Materias.route,    "Historial",        Icons.Filled.BarChart),
-    BottomItem(NavRoute.Calendario.route,  "Comparar",         Icons.Filled.CompareArrows),
-    BottomItem(NavRoute.Settings.route,    "Configuración",    Icons.Filled.Settings),
+    BottomItem(
+        route = NavRoute.Inventory.route,
+        label = "Inventario",
+        icon = Icons.Filled.Home
+    ),
+    BottomItem(
+        route = NavRoute.ShoppingList.route,
+        label = "Lista de compras",
+        icon = Icons.Filled.List
+    ),
+    BottomItem(
+        route = NavRoute.History.route,
+        label = "Historial",
+        icon = Icons.Filled.BarChart
+    ),
+    BottomItem(
+        route = NavRoute.Compare.route,
+        label = "Comparar",
+        icon = Icons.Filled.CompareArrows
+    ),
+    BottomItem(
+        route = NavRoute.Settings.route,
+        label = "Configuración",
+        icon = Icons.Filled.Settings
+    )
 )
