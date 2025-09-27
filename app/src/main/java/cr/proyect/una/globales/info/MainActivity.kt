@@ -9,7 +9,7 @@ import cr.proyect.una.globales.info.presentation.navigation.AppNavGraph
 import cr.proyect.una.globales.info.presentation.navigation.NavRoute
 import cr.proyect.una.globales.info.presentation.navigation.bottomItems
 import cr.proyect.una.globales.info.presentation.ui.layout.MainLayout
-import cr.proyect.una.globales.info.ui.theme.PAITheme
+import cr.proyect.una.globales.info.ui.theme.PAITheme 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
