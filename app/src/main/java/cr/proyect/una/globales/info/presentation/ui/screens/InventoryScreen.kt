@@ -1,137 +1,166 @@
 package cr.proyect.una.globales.info.presentation.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import cr.proyect.una.globales.info.presentation.navigation.NavRoute
-import cr.proyect.una.globales.info.presentation.viewmodel.ProductViewModel
+import androidx.compose.ui.unit.sp
+import cr.proyect.una.globales.info.R // Necesitarías una imagen de Spaghetti, Leche, Jabón, Manzanas en drawables
 
-@OptIn(ExperimentalMaterial3Api::class)
+// Define un modelo de datos para el inventario
+data class InventoryItem(
+    val name: String,
+    val category: String,
+    val quantity: String,
+    val expiryDate: String,
+    val imageResId: Int? = null
+)
+
 @Composable
 fun InventoryScreen(
-    navController: NavController,
-    productViewModel: ProductViewModel = hiltViewModel()
+    onAddItemClick: () -> Unit,
+    onItemClick: (InventoryItem) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val products by productViewModel.products.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-    val sortOptions = listOf("Name", "Price", "Quantity")
-    var selectedSortOption by remember { mutableStateOf(sortOptions[0]) }
+    
+    // Datos simulados (deberían venir de un ViewModel)
+    val inventoryItems = listOf(
+        InventoryItem("Spaghetti", "Alimentos", "2 paquetes", "25 ago", R.drawable.spaghetti), // Ejemplo
+        InventoryItem("Leche", "Lácteos", "1 botella", "10 mayo", R.drawable.leche), // Ejemplo
+        InventoryItem("Jabón en barra", "Limpieza", "3", "5 jun", R.drawable.jabon), // Ejemplo
+        InventoryItem("Manzanas", "Alimentos", "6", "20 abr", R.drawable.manzanas) // Ejemplo
+    )
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(NavRoute.AddProduct.route) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Product")
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Logo/Título HomeStock
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painterResource(id = R.drawable.logo), contentDescription = "Logo", Modifier.size(24.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("HomeStock", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+                }
+                
+                // Botón +
+                IconButton(onClick = onAddItemClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar producto", tint = Color.Black)
+                }
             }
-        }
-    ) {
+        },
+        // El BottomBar ya estaría implementado en MainLayout
+        // bottomBar = { BottomBar(...) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(it)
-                .padding(16.dp)
+                .padding(horizontal = 20.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Text(
+                "Inventario",
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+
+            // Barra de búsqueda
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Black,
+                    unfocusedContainerColor = Color(0xFFF0F0F0),
+                    focusedContainerColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            // Lista de inventario
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    label = { Text("Search") },
-                    modifier = Modifier.weight(1f),
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear Search")
-                            }
-                        }
-                    }
-                )
-                Box {
-                    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-                        TextField(
-                            readOnly = true,
-                            value = selectedSortOption,
-                            onValueChange = {},
-                            label = { Text("Sort by") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            modifier = Modifier.menuAnchor()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            sortOptions.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    text = { Text(selectionOption) },
-                                    onClick = {
-                                        selectedSortOption = selectionOption
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
+                items(inventoryItems.filter { 
+                    it.name.contains(searchQuery, ignoreCase = true) || it.category.contains(searchQuery, ignoreCase = true) 
+                }) { item ->
+                    InventoryItemCard(item = item, onClick = { onItemClick(item) })
                 }
             }
+        }
+    }
+}
 
-            if (products.isEmpty()) {
-                Text(text = "No products found")
-            } else {
-                LazyColumn {
-                    val sortedProducts = when (selectedSortOption) {
-                        "Name" -> products.sortedBy { it.name }
-                        "Price" -> products.sortedBy { it.price }
-                        "Quantity" -> products.sortedBy { it.quantity }
-                        else -> products
-                    }
-                    items(sortedProducts.filter { it.name.contains(searchQuery, ignoreCase = true) }) { product ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "${product.name} - ${product.price} - ${product.quantity}",
-                                modifier = Modifier.weight(1f)
-                            )
-                            IconButton(onClick = { productViewModel.deleteProduct(product.id!!) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Product")
-                            }
-                        }
-                    }
-                }
+@Composable
+fun InventoryItemCard(item: InventoryItem, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(90.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Placeholder de Imagen (Si no tienes las imágenes, puedes usar un Box verde)
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFE0F7FA)),
+                contentAlignment = Alignment.Center
+            ) {
+                // Aquí deberías cargar la imagen real. Usaré un Box como placeholder.
+                // Image(painter = painterResource(id = item.imageResId!!), contentDescription = null)
+                Text("Img", fontSize = 12.sp) // Placeholder simple
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            // Detalles del Producto
+            Column(Modifier.weight(1f)) {
+                Text(item.name, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                Text(item.category, fontSize = 14.sp, color = Color.Gray)
+                Text("Cantidad: ${item.quantity}", fontSize = 14.sp, color = Color.DarkGray)
+            }
+
+            // Fecha de vencimiento
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Vence:", fontSize = 12.sp, color = Color.Gray)
+                Text(item.expiryDate, fontWeight = FontWeight.Medium, fontSize = 14.sp, color = Color(0xFFDC2626)) // Rojo para la fecha
             }
         }
     }
