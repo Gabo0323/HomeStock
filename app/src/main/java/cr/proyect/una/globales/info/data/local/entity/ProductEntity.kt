@@ -1,7 +1,11 @@
-package cr.proyect.una.globales.info.domain.model
+package cr.proyect.una.globales.info.data.local.entity
 
-data class Product(
-    val id: String,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "products")
+data class ProductEntity(
+    @PrimaryKey val id: String,
     val name: String,
     val category: String,
     val quantity: Int,
