@@ -13,6 +13,8 @@ import cr.proyect.una.globales.info.presentation.ui.layout.MainLayout
 import cr.proyect.una.globales.info.presentation.viewmodel.AuthViewModel
 import cr.proyect.una.globales.info.ui.theme.PAITheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,14 +38,17 @@ class MainActivity : ComponentActivity() {
                 )
                 val showBottomBar = currentRoute in topLevelRoutes
 
+                val user by authViewModel.user.collectAsState()
+                val startRoute = if (user != null) NavRoute.Inventory.route else NavRoute.Login.route
+
                 MainLayout(
                     navController = navController,
                     showBottomBar = showBottomBar,
                     title = bottomItems.firstOrNull { it.route == currentRoute }?.label ?: "HomeStock"
-                ) { innerModifier ->
+                ) { _ /* inner padding not needed by AppNavGraph currently */ ->
                     AppNavGraph(
                         navController = navController,
-                        start = if (authViewModel.user.value != null) NavRoute.Inventory.route else NavRoute.Login.route,
+                        start = startRoute,
                         onLoggedIn = {
                             navController.navigate(NavRoute.Inventory.route) {
                                 popUpTo(0)
@@ -55,8 +60,7 @@ class MainActivity : ComponentActivity() {
                                 popUpTo(0)
                                 launchSingleTop = true
                             }
-                        },
-                        modifier = innerModifier
+                        }
                     )
                 }
             }

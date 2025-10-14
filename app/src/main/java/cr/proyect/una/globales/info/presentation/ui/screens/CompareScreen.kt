@@ -1,10 +1,34 @@
 package cr.proyect.una.globales.info.presentation.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SwapHoriz // Icono a usar para VS
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-
-// ... importaciones necesarias
-import androidx.compose.material.icons.filled.SwapHoriz // Icono a usar para VS
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 data class ProductComparison(
     val name: String,
@@ -17,8 +41,8 @@ fun CompareScreen(
     modifier: Modifier = Modifier
 ) {
     // Datos simulados (deberían ser seleccionables en una app real)
-    val product1 = ProductComparison("Spaghetti", "Alimentos", R.drawable.spaghetti)
-    val product2 = ProductComparison("Pasta espagueti", "Alimentos", R.drawable.spaghetti)
+    val product1 = ProductComparison("Spaghetti", "Alimentos")
+    val product2 = ProductComparison("Pasta espagueti", "Alimentos")
 
     Column(
         modifier = modifier
@@ -41,7 +65,7 @@ fun CompareScreen(
             // Separador VS
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
-                    Icons.Default.SwapHoriz, 
+                    Icons.Default.SwapHoriz,
                     contentDescription = "VS", 
                     modifier = Modifier.size(32.dp),
                     tint = Color.Gray
@@ -54,8 +78,7 @@ fun CompareScreen(
         
         Spacer(Modifier.height(32.dp))
 
-        // Aquí iría la tabla de comparación de valores nutricionales, precios, etc.
-        // Se omitirá por simplicidad, pero se indicaría con un Box.
+        // Sección de detalles de comparación
         Card(
              modifier = Modifier.fillMaxWidth().height(200.dp),
              colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -94,7 +117,6 @@ fun RowScope.ProductCard(product: ProductComparison, modifier: Modifier = Modifi
                     .background(Color(0xFFE0F7FA)),
                 contentAlignment = Alignment.Center
             ) {
-                 // Image(painter = painterResource(id = product.imageResId!!), contentDescription = null)
                  Text("Img", fontSize = 16.sp) // Placeholder simple
             }
 

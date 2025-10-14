@@ -1,5 +1,27 @@
 package cr.proyect.una.globales.info.presentation.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 
 data class HistoryEntry(
     val product: String,
@@ -42,7 +64,7 @@ fun HistoryScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("9 abr. 2024", fontWeight = FontWeight.SemiBold)
-                Icon(Icons.Default.ArrowRightAlt, contentDescription = "A", modifier = Modifier.padding(horizontal = 8.dp))
+                Icon(Icons.AutoMirrored.Filled.ArrowRightAlt, contentDescription = "A", modifier = Modifier.padding(horizontal = 8.dp))
                 Text("15 abr. 2024", fontWeight = FontWeight.SemiBold)
             }
         }

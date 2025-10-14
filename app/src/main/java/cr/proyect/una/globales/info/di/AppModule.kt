@@ -10,11 +10,6 @@ import cr.proyect.una.globales.info.data.repository.AuthRepositoryImpl
 import cr.proyect.una.globales.info.data.repository.ProductRepositoryImpl
 import cr.proyect.una.globales.info.domain.repository.ProductRepository
 import cr.proyect.una.globales.info.domain.repository.UserRepository
-import cr.proyect.una.globales.info.domain.use_case.AddProductUseCase
-import cr.proyect.una.globales.info.domain.use_case.DeleteProductUseCase
-import cr.proyect.una.globales.info.domain.use_case.GetProductsUseCase
-import cr.proyect.una.globales.info.domain.use_case.LoginUseCase
-import cr.proyect.una.globales.info.domain.use_case.RegisterUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,35 +59,5 @@ object AppModule {
     @Singleton
     fun provideUserRepository(firebaseAuth: FirebaseAuth, userDao: UserDao): UserRepository {
         return AuthRepositoryImpl(firebaseAuth, userDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAddProductUseCase(productRepository: ProductRepository): AddProductUseCase {
-        return AddProductUseCase(productRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetProductsUseCase(productRepository: ProductRepository): GetProductsUseCase {
-        return GetProductsUseCase(productRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDeleteProductUseCase(productRepository: ProductRepository): DeleteProductUseCase {
-        return DeleteProductUseCase(productRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideLoginUseCase(userRepository: UserRepository): LoginUseCase {
-        return LoginUseCase(userRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRegisterUseCase(userRepository: UserRepository): RegisterUseCase {
-        return RegisterUseCase(userRepository)
     }
 }

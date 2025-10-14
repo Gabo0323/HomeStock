@@ -42,4 +42,12 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    // Logout mínimo para la UI; reemplazar con la lógica real (por ejemplo, FirebaseAuth.signOut())
+    fun logout() {
+        viewModelScope.launch {
+            _user.value = null
+            _error.value = null
+        }
+    }
 }

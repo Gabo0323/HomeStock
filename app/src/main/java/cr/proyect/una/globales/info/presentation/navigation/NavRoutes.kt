@@ -16,4 +16,5 @@ sealed class NavRoute(val route: String) {
     object ProductDetail : NavRoute("product/{productId}") {
         fun build(id: Int) = "product/$id"
     }
+    object AddProduct : NavRoute("add_product")
 }

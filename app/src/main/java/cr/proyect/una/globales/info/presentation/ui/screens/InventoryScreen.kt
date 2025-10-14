@@ -1,6 +1,5 @@
 package cr.proyect.una.globales.info.presentation.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,11 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cr.proyect.una.globales.info.R // Necesitarías una imagen de Spaghetti, Leche, Jabón, Manzanas en drawables
 
 // Define un modelo de datos para el inventario
 data class InventoryItem(
@@ -41,10 +38,10 @@ fun InventoryScreen(
     
     // Datos simulados (deberían venir de un ViewModel)
     val inventoryItems = listOf(
-        InventoryItem("Spaghetti", "Alimentos", "2 paquetes", "25 ago", R.drawable.spaghetti), // Ejemplo
-        InventoryItem("Leche", "Lácteos", "1 botella", "10 mayo", R.drawable.leche), // Ejemplo
-        InventoryItem("Jabón en barra", "Limpieza", "3", "5 jun", R.drawable.jabon), // Ejemplo
-        InventoryItem("Manzanas", "Alimentos", "6", "20 abr", R.drawable.manzanas) // Ejemplo
+        InventoryItem("Spaghetti", "Alimentos", "2 paquetes", "25 ago"),
+        InventoryItem("Leche", "Lácteos", "1 botella", "10 mayo"),
+        InventoryItem("Jabón en barra", "Limpieza", "3", "5 jun"),
+        InventoryItem("Manzanas", "Alimentos", "6", "20 abr")
     )
 
     Scaffold(
@@ -57,10 +54,8 @@ fun InventoryScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Logo/Título HomeStock
+                // Título HomeStock
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painterResource(id = R.drawable.logo), contentDescription = "Logo", Modifier.size(24.dp))
-                    Spacer(Modifier.width(8.dp))
                     Text("HomeStock", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
                 }
                 
@@ -70,8 +65,7 @@ fun InventoryScreen(
                 }
             }
         },
-        // El BottomBar ya estaría implementado en MainLayout
-        // bottomBar = { BottomBar(...) }
+        // bottomBar = { ... }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -135,7 +129,7 @@ fun InventoryItemCard(item: InventoryItem, onClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Placeholder de Imagen (Si no tienes las imágenes, puedes usar un Box verde)
+            // Placeholder de Imagen
             Box(
                 modifier = Modifier
                     .size(60.dp)
@@ -143,8 +137,6 @@ fun InventoryItemCard(item: InventoryItem, onClick: () -> Unit) {
                     .background(Color(0xFFE0F7FA)),
                 contentAlignment = Alignment.Center
             ) {
-                // Aquí deberías cargar la imagen real. Usaré un Box como placeholder.
-                // Image(painter = painterResource(id = item.imageResId!!), contentDescription = null)
                 Text("Img", fontSize = 12.sp) // Placeholder simple
             }
 
@@ -160,7 +152,7 @@ fun InventoryItemCard(item: InventoryItem, onClick: () -> Unit) {
             // Fecha de vencimiento
             Column(horizontalAlignment = Alignment.End) {
                 Text("Vence:", fontSize = 12.sp, color = Color.Gray)
-                Text(item.expiryDate, fontWeight = FontWeight.Medium, fontSize = 14.sp, color = Color(0xFFDC2626)) // Rojo para la fecha
+                Text(item.expiryDate, fontWeight = FontWeight.Medium, fontSize = 14.sp, color = Color(0xFFDC2626))
             }
         }
     }

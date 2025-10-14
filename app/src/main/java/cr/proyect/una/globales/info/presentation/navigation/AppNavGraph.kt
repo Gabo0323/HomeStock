@@ -23,10 +23,13 @@ fun AppNavGraph(
             RegisterScreen(navController)
         }
         composable(NavRoute.Inventory.route) {
-            InventoryScreen(navController = navController)
+            InventoryScreen(
+                onAddItemClick = { navController.navigate("add_product") },
+                onItemClick = { /* TODO: navegar a detalle cuando tengamos ID */ }
+            )
         }
         composable(NavRoute.ShoppingList.route) {
-            ShoppingListScreen()
+            ShoppingListScreen(onAddItemClick = { navController.navigate("add_product") })
         }
         composable(NavRoute.History.route) {
             HistoryScreen()
@@ -35,12 +38,12 @@ fun AppNavGraph(
             CompareScreen()
         }
         composable(NavRoute.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(onLogout = onLogout)
         }
         composable(NavRoute.ProductDetail.route) {
             ProductDetailScreen()
         }
-        composable(NavRoute.AddProduct.route) {
+        composable("add_product") {
             AddProductScreen(onProductAdded = { navController.popBackStack() })
         }
     }

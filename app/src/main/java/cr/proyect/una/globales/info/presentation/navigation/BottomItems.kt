@@ -1,10 +1,10 @@
 package cr.proyect.una.globales.info.presentation.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -23,7 +23,7 @@ val bottomItems: List<BottomItem> = listOf(
     BottomItem(
         route = NavRoute.ShoppingList.route,
         label = "Lista de compras",
-        icon = Icons.Filled.List
+        icon = Icons.AutoMirrored.Filled.List
     ),
     BottomItem(
         route = NavRoute.History.route,
@@ -33,7 +33,7 @@ val bottomItems: List<BottomItem> = listOf(
     BottomItem(
         route = NavRoute.Compare.route,
         label = "Comparar",
-        icon = Icons.Filled.CompareArrows
+        icon = Icons.AutoMirrored.Filled.CompareArrows
     ),
     BottomItem(
         route = NavRoute.Settings.route,

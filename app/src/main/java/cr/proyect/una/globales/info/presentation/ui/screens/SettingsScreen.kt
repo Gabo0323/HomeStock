@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import cr.proyect.una.globales.info.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun SettingsScreen(
-    authViewModel: AuthViewModel = hiltViewModel()
+    onLogout: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -24,7 +22,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { authViewModel.logout() }) {
+        Button(onClick = onLogout) {
             Text("Logout")
         }
     }

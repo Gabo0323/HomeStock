@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cr.proyect.una.globales.info.domain.model.Product
 import cr.proyect.una.globales.info.presentation.viewmodel.ProductViewModel
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,9 +51,15 @@ fun AddProductScreen(
         )
         Button(onClick = {
             val product = Product(
+                id = UUID.randomUUID().toString(),
                 name = name,
+                category = "",
+                quantity = quantity.toInt(),
+                acquisitionDate = "",
                 price = price.toDouble(),
-                quantity = quantity.toInt()
+                brand = "",
+                purchaseLocation = "",
+                imageUrl = ""
             )
             productViewModel.addProduct(product)
             onProductAdded()
