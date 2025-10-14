@@ -5,10 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import cr.proyect.una.globales.info.presentation.ui.screens.* // Home/TaskList/Materias/Calendario/Login/Register/Config/Detail
-import cr.proyect.una.globales.info.presentation.viewmodel.TaskViewModel
+import androidx.navigation.navArgument
+import cr.proyect.una.globales.info.presentation.ui.screens.*
+import cr.proyect.una.globales.info.presentation.ui.screens.ProductDetailScreen
+import cr.proyect.una.globales.info.presentation.viewmodel.HistoryViewModel
 
 @Composable
 fun AppNavGraph(
@@ -18,7 +21,7 @@ fun AppNavGraph(
     onLoggedIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val vm: TaskViewModel = viewModel()
+    val vm: HistoryViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = start) {
 
@@ -47,7 +50,7 @@ fun AppNavGraph(
 
         // --- Top-level (BottomBar) ---
         composable(NavRoute.Inventory.route) {
-            HomeScreen( // si luego renombraste a InventoryScreen, cambia aquí el nombre de la función
+            InventoryScreen(
                 onSeeAllTasks = { navController.navigate(NavRoute.ShoppingList.route) },
                 onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
                 modifier = modifier
@@ -55,7 +58,7 @@ fun AppNavGraph(
         }
 
         composable(NavRoute.ShoppingList.route) {
-            TaskListScreen( // si luego renombraste a ShoppingListScreen, cambia aquí el nombre de la función
+            ShoppingListScreen(
                 vm = vm,
                 onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
                 modifier = modifier
@@ -63,23 +66,38 @@ fun AppNavGraph(
         }
 
         composable(NavRoute.History.route) {
-            MateriasScreen( // si luego renombraste a HistoryScreen, cambia aquí el nombre
+            HistoryScreen(
                 modifier = modifier
             )
         }
 
         composable(NavRoute.Compare.route) {
-            CalendarioScreen( // si luego renombraste a CompareScreen, cambia aquí el nombre
+            CompareScreen(
                 modifier = modifier
             )
         }
 
         composable(NavRoute.Settings.route) {
             // Usa el que tengas: ConfiguracionScreen o SettingsScreen
-            ConfiguracionScreen(onLogout = onLogout, modifier = modifier)
-            // Si ya renombraste: SettingsScreen(onLogout = onLogout, modifier = modifier)
+            ConfiguracionScreen(
+                onLogout = {
+                    onLogout()
+                    navController.navigate(NavRoute.Login.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
+                modifier = modifier
+            )
         }
 
-
+        // --- Secundarias ---
+        composable(
+            route = NavRoute.ProductDetail.route,
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("productId") ?: return@composable
+            ProductDetailScreen(productId = id, modifier = modifier)
+        }
     }
 }

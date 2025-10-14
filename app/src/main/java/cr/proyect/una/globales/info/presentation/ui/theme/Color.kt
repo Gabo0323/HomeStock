@@ -1,4 +1,4 @@
-package cr.proyect.una.globales.info.ui.theme
+package cr.proyect.una.globales.info.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

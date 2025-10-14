@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
-fun HomeScreen(
+fun InventoryScreen(
     onSeeAllTasks: () -> Unit,
     onOpenTask: (Int) -> Unit,
     modifier: Modifier = Modifier

@@ -3,13 +3,18 @@ package cr.proyect.una.globales.info
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cr.proyect.una.globales.info.presentation.navigation.AppNavGraph
 import cr.proyect.una.globales.info.presentation.navigation.NavRoute
 import cr.proyect.una.globales.info.presentation.navigation.bottomItems
 import cr.proyect.una.globales.info.presentation.ui.layout.MainLayout
-import cr.proyect.una.globales.info.ui.theme.PAITheme
+import cr.proyect.una.globales.info.presentation.ui.theme.PAITheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +24,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val backStackEntry = navController.currentBackStackEntryAsState().value
                 val currentRoute = backStackEntry?.destination?.route
+
+                val context = LocalContext.current
+                val scope = rememberCoroutineScope()
+                val loggedIn by SessionManager.isLoggedIn(context).collectAsState(initial = false)
+                val startRoute = if (loggedIn) NavRoute.Inventory.route else NavRoute.Login.route
 
                 // Top-level que muestran la BottomBar (nuevos nombres)
                 val topLevelRoutes = setOf(
@@ -38,20 +48,12 @@ class MainActivity : ComponentActivity() {
                     AppNavGraph(
                         navController = navController,
                         // Si usas login, puedes cambiar a NavRoute.Login.route más adelante.
-                        start = NavRoute.Inventory.route,
+                        start = startRoute,
                         onLoggedIn = {
-                            // Navega al inicio del app después de login
-                            navController.navigate(NavRoute.Inventory.route) {
-                                popUpTo(0)
-                                launchSingleTop = true
-                            }
+                            scope.launch { SessionManager.setLoggedIn(context, true) }
                         },
                         onLogout = {
-                            // Vuelve a login si implementas sesión
-                            navController.navigate(NavRoute.Login.route) {
-                                popUpTo(0)
-                                launchSingleTop = true
-                            }
+                            scope.launch { SessionManager.setLoggedIn(context, false) }
                         },
                         modifier = innerModifier
                     )
