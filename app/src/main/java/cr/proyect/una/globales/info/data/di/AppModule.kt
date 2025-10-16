@@ -1,4 +1,4 @@
-package cr.proyect.una.globales.info.di
+package cr.proyect.una.globales.info.data.di
 
 import android.content.Context
 import androidx.room.Room

@@ -11,7 +11,7 @@ import cr.proyect.una.globales.info.presentation.navigation.NavRoute
 import cr.proyect.una.globales.info.presentation.navigation.bottomItems
 import cr.proyect.una.globales.info.presentation.ui.layout.MainLayout
 import cr.proyect.una.globales.info.presentation.viewmodel.AuthViewModel
-import cr.proyect.una.globales.info.ui.theme.PAITheme
+import cr.proyect.una.globales.info.presentation.ui.theme.PAITheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val showBottomBar = currentRoute in topLevelRoutes
 
                 val user by authViewModel.user.collectAsState()
-                val startRoute = if (user != null) NavRoute.Inventory.route else NavRoute.Login.route
+                val startRoute = if (user != null) NavRoute.Inventory.route else NavRoute.Inventory.route
 
                 MainLayout(
                     navController = navController,

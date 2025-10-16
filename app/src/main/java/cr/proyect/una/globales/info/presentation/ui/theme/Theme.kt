@@ -1,6 +1,5 @@
-package cr.proyect.una.globales.info.ui.theme
+package cr.proyect.una.globales.info.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
