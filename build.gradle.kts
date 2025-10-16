@@ -7,3 +7,9 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.kotlin.kapt) apply false
 }
+
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2") // 🔥 Agrega esta línea
+    }
+}
