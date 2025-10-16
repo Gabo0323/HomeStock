@@ -87,6 +87,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    // SQLite nativo para Windows
+    implementation("org.xerial:sqlite-jdbc:3.41.2.1")
 }
 
 kapt {
