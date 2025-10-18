@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.VisualTransformation
@@ -33,7 +32,6 @@ fun RegisterScreen(
 
     isLoading: Boolean = false
 ) {
-    var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var confirmPass by remember { mutableStateOf("") }
@@ -119,18 +117,6 @@ fun RegisterScreen(
             )
 
             Spacer(Modifier.height(24.dp))
-
-            // Nombre completo
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                label = { Text("Nombre completo") },
-                placeholder = { Text("Tu nombre completo") },
-                leadingIcon = { Icon(imageVector = Icons.Filled.Person, contentDescription = "Nombre") },
-                enabled = !isLoading,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(12.dp))
 
             // Correo
             OutlinedTextField(
