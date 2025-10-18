@@ -40,10 +40,14 @@ class MainActivity : ComponentActivity() {
                 )
                 val showBottomBar = currentRoute in topLevelRoutes
 
+                val titleText = if (currentRoute == NavRoute.Login.route) "" else {
+                    bottomItems.firstOrNull { it.route == currentRoute }?.label ?: "HomeStock"
+                }
+
                 MainLayout(
                     navController = navController,
                     showBottomBar = showBottomBar,
-                    title = bottomItems.firstOrNull { it.route == currentRoute }?.label ?: "HomeStock"
+                    title = titleText
                 ) { innerModifier ->
                     AppNavGraph(
                         navController = navController,
