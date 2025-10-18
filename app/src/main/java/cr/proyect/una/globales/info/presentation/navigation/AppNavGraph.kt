@@ -13,6 +13,8 @@ import cr.proyect.una.globales.info.presentation.ui.screens.*
 import cr.proyect.una.globales.info.presentation.ui.screens.ProductDetailScreen
 import cr.proyect.una.globales.info.presentation.viewmodel.HistoryViewModel
 
+import cr.proyect.una.globales.info.presentation.ui.containers.RegisterContainer
+
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
@@ -41,7 +43,8 @@ fun AppNavGraph(
 
         composable(NavRoute.Register.route) {
             Box(modifier) {
-                RegisterScreen(
+
+                RegisterContainer(
                     onRegisterSuccess = { navController.popBackStack() },
                     onGoToLogin = { navController.popBackStack() }
                 )

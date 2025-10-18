@@ -26,7 +26,8 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onGoToRegister: () -> Unit
+    onGoToRegister: () -> Unit,
+    onSubmit: (email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) -> Unit = { _, _, onS, _ -> onS() }
 ) {
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
@@ -130,8 +131,11 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                if (canLogin) onLoginSuccess() else error = "Verifica tu correo y contraseña"
-            },
+                    if (canLogin) { onSubmit(email, pass, { onLoginSuccess() }, { msg -> error = msg })
+                    } else {
+                        error = "Verifica tu correo y contraseña"
+                     }
+                 },
             enabled = canLogin,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF6750A4),
