@@ -1,0 +1,5 @@
+export interface User {
+  id?: string; // ? indica que es opcional
+  name: string;
+  email: string;
+}

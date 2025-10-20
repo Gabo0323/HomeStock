@@ -1,0 +1,7 @@
+export interface Purchase {
+  id: string;
+  productId: string;
+  quantity: number;
+  purchaseDate: Date; // Date nativo de JS/TS
+  store: string;
+}

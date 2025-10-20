@@ -1,0 +1,5 @@
+export interface Task {
+  id: number;
+  title: string;
+  due: Date; // LocalDateTime de Kotlin se mapea a Date en TS
+}
