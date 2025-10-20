@@ -3,9 +3,15 @@ package cr.proyect.una.globales.info.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import cr.proyect.una.globales.info.presentation.ui.screens.*
+import cr.proyect.una.globales.info.presentation.ui.screens.ProductDetailScreen
+import cr.proyect.una.globales.info.presentation.viewmodel.HistoryViewModel
+
+import cr.proyect.una.globales.info.presentation.ui.containers.RegisterContainer
 
 @Composable
 fun AppNavGraph(
@@ -15,36 +21,67 @@ fun AppNavGraph(
     onLoggedIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val vm: HistoryViewModel = viewModel()
+
     NavHost(navController = navController, startDestination = start) {
         composable(NavRoute.Login.route) {
             LoginScreen(navController)
         }
         composable(NavRoute.Register.route) {
             RegisterScreen(navController)
+            Box(modifier) {
+
+                RegisterContainer(
+                    onRegisterSuccess = { navController.popBackStack() },
+                    onGoToLogin = { navController.popBackStack() }
+                )
+            }
         }
         composable(NavRoute.Inventory.route) {
             InventoryScreen(
-                onAddItemClick = { navController.navigate("add_product") },
-                onItemClick = { /* TODO: navegar a detalle cuando tengamos ID */ }
+                onSeeAllTasks = { navController.navigate(NavRoute.ShoppingList.route) },
+                onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
+                modifier = modifier
             )
         }
         composable(NavRoute.ShoppingList.route) {
-            ShoppingListScreen(onAddItemClick = { navController.navigate("add_product") })
+            ShoppingListScreen(
+                vm = vm,
+                onOpenTask = { id -> navController.navigate(NavRoute.ProductDetail.build(id)) },
+                modifier = modifier
+            )
         }
         composable(NavRoute.History.route) {
-            HistoryScreen()
+            HistoryScreen(
+                modifier = modifier
+            )
         }
         composable(NavRoute.Compare.route) {
-            CompareScreen()
+            CompareScreen(
+                modifier = modifier
+            )
         }
         composable(NavRoute.Settings.route) {
-            SettingsScreen(onLogout = onLogout)
+            // Usa el que tengas: ConfiguracionScreen o SettingsScreen
+            ConfiguracionScreen(
+                onLogout = {
+                    onLogout()
+                    navController.navigate(NavRoute.Login.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
+                modifier = modifier
+            )
         }
-        composable(NavRoute.ProductDetail.route) {
-            ProductDetailScreen()
-        }
-        composable("add_product") {
-            AddProductScreen(onProductAdded = { navController.popBackStack() })
+
+        // --- Secundarias ---
+        composable(
+            route = NavRoute.ProductDetail.route,
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("productId") ?: return@composable
+            ProductDetailScreen(productId = id, modifier = modifier)
         }
     }
 }
