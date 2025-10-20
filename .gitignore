@@ -1,3 +1,4 @@
+# Android / Java / Kotlin
 *.iml
 .gradle
 /local.properties
@@ -13,3 +14,31 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node / JavaScript / React Native
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# iOS / macOS
+ios/
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# Metro / React Native
+.metro-health-check*
+
+# Environment / local config
+.env*
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
