@@ -19,9 +19,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Config de red
-        buildConfigField("String", "BASE_URL", "\"https://backend-homestock.onrender.com/\"")
     }
     kotlin {
         jvmToolchain(17)
@@ -45,7 +42,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 }
 
@@ -66,9 +62,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.google.material)
+    implementation(libs.material)
 
     // Se mantiene un único BOM de Compose
     implementation(libs.androidx.navigation.compose)
@@ -103,14 +98,3 @@ kapt {
 
 
 apply(plugin = "com.google.gms.google-services")
-    // Networking
-    implementation(libs.retrofit2)
-    implementation(libs.retrofit2.converter.moshi)
-    implementation(libs.okhttp3)
-    implementation(libs.okhttp3.logging)
-    implementation(libs.moshi.kotlin)
-
-    // Lifecycle ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")
-}

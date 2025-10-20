@@ -30,8 +30,8 @@ data class InventoryItem(
 
 @Composable
 fun InventoryScreen(
-    onSeeAllTasks: () -> Unit,
-    onOpenTask: (Int) -> Unit,
+    onAddItemClick: () -> Unit,
+    onItemClick: (InventoryItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }

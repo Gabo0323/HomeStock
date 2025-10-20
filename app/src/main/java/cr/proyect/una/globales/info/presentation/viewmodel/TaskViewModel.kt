@@ -6,7 +6,7 @@ import cr.proyect.una.globales.info.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class HistoryViewModel : ViewModel() {
+class TaskViewModel : ViewModel() {
     private val repo = InMemoryTaskRepository()
     val tasks = repo.tasks()
 

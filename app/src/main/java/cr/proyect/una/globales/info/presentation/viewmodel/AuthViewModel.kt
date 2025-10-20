@@ -1,65 +1,53 @@
 package cr.proyect.una.globales.info.presentation.viewmodel
 
-
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cr.proyect.una.globales.info.core.network.AuthTokenProvider
-import cr.proyect.una.globales.info.data.auth.AuthRepository
-import cr.proyect.una.globales.info.data.auth.AuthRepositoryImpl
-import cr.proyect.una.globales.info.data.auth.AuthResult
-import cr.proyect.una.globales.info.data.auth.TokenStore
+import cr.proyect.una.globales.info.domain.model.User
+import cr.proyect.una.globales.info.domain.use_case.LoginUseCase
+import cr.proyect.una.globales.info.domain.use_case.RegisterUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(app: Application) : AndroidViewModel(app) {
-    private val tokenStore = TokenStore(app)
-    private val tokenProvider = AuthTokenProvider()
-    private val repo: AuthRepository = AuthRepositoryImpl(tokenStore, tokenProvider)
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase
+) : ViewModel() {
 
-    private val _loading = MutableStateFlow(false)
-    val loading = _loading.asStateFlow()
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
     private val _error = MutableStateFlow<String?>(null)
-    val error = _error.asStateFlow()
+    val error: StateFlow<String?> = _error
 
-    init {
-        // Inicializa el token en memoria (interceptor) si ya estaba guardado
+    fun login(email: String, password: String) {
         viewModelScope.launch {
-            val saved = tokenStore.token.first()
-            tokenProvider.set(saved)
+            try {
+                _user.value = loginUseCase(email, password)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
         }
     }
 
-    fun login(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun register(user: User, password: String) {
         viewModelScope.launch {
-            _loading.value = true
-            _error.value = null
-            when (val r = repo.login(email, password)) {
-                is AuthResult.Ok -> onSuccess()
-                is AuthResult.Error -> {
-                    _error.value = r.message
-                    onError(r.message)
-                }
+            try {
+                _user.value = registerUseCase(user, password)
+            } catch (e: Exception) {
+                _error.value = e.message
             }
-            _loading.value = false
         }
     }
 
-    fun register(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    // Logout mínimo para la UI; reemplazar con la lógica real (por ejemplo, FirebaseAuth.signOut())
+    fun logout() {
         viewModelScope.launch {
-            _loading.value = true
+            _user.value = null
             _error.value = null
-            when (val r = repo.register(email, password)) {
-                is AuthResult.Ok -> onSuccess()
-                is AuthResult.Error -> {
-                    _error.value = r.message
-                    onError(r.message)
-                }
-            }
-            _loading.value = false
         }
     }
 }
