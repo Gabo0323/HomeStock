@@ -1,0 +1,22 @@
+export interface CreateProductDto {
+  name: string;
+  category: string;
+  quantity: number;
+  acquisitionDate: string;
+  price: number;
+  brand: string;
+  purchaseLocation: string;
+  imageUrl: string;
+}
+
+export interface UpdateProductDto {
+  id: string;
+  name?: string;
+  category?: string;
+  quantity?: number;
+  acquisitionDate?: string;
+  price?: number;
+  brand?: string;
+  purchaseLocation?: string;
+  imageUrl?: string;
+}

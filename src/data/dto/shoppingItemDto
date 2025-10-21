@@ -1,0 +1,12 @@
+export interface CreateShoppingItemDto {
+  productId: string;
+  quantity: number;
+  isPurchased: boolean;
+}
+
+export interface UpdateShoppingItemDto {
+  id: string;
+  productId?: string;
+  quantity?: number;
+  isPurchased?: boolean;
+}

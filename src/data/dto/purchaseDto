@@ -1,0 +1,14 @@
+export interface CreatePurchaseDto {
+  productId: string;
+  quantity: number;
+  purchaseDate: Date;
+  store: string;
+}
+
+export interface UpdatePurchaseDto {
+  id: string;
+  productId?: string;
+  quantity?: number;
+  purchaseDate?: Date;
+  store?: string;
+}
