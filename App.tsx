@@ -8,6 +8,7 @@ import InventoryScreen from './src/screens/InventoryScreen';
 import ShoppingListScreen from './src/screens/ShoppingListScreen';
 import {LoginScreen}  from './src/screens/LoginScreen';
 import { RootStackParamList } from './src/types/navigation';
+import { RegisterScreen } from '@/screens/RegisterScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -20,6 +21,7 @@ const linking = {
       Inventory: '/inventory',
       Profile: '/profile',
       ShoppingList: '/shopping-list',
+      Register : '/register'
     },
   },
 };
@@ -42,6 +44,11 @@ export default function App() {
         <Stack.Screen 
           name="LoginScreen" 
           component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen 
+          name="Register" 
+          component={RegisterScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen 
