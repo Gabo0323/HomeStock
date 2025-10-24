@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ShoppingList, Item, getShoppingLists, createShoppingList, updateItem, deleteItem } from '../api/shoppingList';
+import { ShoppingListScreenProps } from '../types/navigation';
 
-export default function ShoppingListScreen() {
+export default function ShoppingListScreen({ navigation }: ShoppingListScreenProps) {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

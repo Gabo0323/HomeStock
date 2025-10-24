@@ -2,16 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { getShoppingLists, ShoppingList, updateShoppingList } from '../api/shoppingList';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { InventoryScreenProps } from '../types/navigation';
 
-type RootStackParamList = {
-  Inventory: undefined;
-  Profile: undefined;
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Inventory'>;
-
-export default function InventoryScreen({ navigation }: Props) {
+export default function InventoryScreen({ navigation }: InventoryScreenProps) {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +13,7 @@ export default function InventoryScreen({ navigation }: Props) {
     (async () => {
       const lists = await getShoppingLists();
       setShoppingLists(lists);
-      setSelectedList(lists.length > 0 ? lists[0].id : null);
+     setSelectedList(lists.length > 0 ? lists[0].id : null);
       setLoading(false);
     })();
   }, []);

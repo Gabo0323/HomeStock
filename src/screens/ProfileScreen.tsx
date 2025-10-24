@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { getUserProfile, logout, User } from '../api/profile';
+import { ProfileScreenProps } from '../types/navigation';
 
-type RootStackParamList = {
-  Inventory: undefined;
-  Profile: undefined;
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
-
-export default function ProfileScreen({ navigation }: Props) {
+export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
