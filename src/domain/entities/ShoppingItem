@@ -1,6 +1,0 @@
-export interface ShoppingItem {
-  id: string;
-  productId: string;
-  quantity: number;
-  isPurchased: boolean;
-}
