@@ -1,5 +1,5 @@
 // src/presentation/viewModels/productViewModel.integration.test.ts
-import { ProductViewModel } from "./productViewModel";
+import { ProductViewModel } from "../presentation/viewModels/productViewModel";
 import { ProductRepositoryImpl } from "@/data/repositories/productRepositoryImpl";
 import { ProductRemoteDataSource } from "@/data/datasources/productRemoteDataSource";
 import { CreateProductUseCase } from "@/domain/useCases/productUseCase";
