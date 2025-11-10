@@ -25,10 +25,6 @@ export interface CreateProductDto {
   barcode: string;
 }
 
-export interface UpdateProductDto{
-  minStock: number;
-}
-
 export interface ProductListDto {
   products: ProductDto[];
 }

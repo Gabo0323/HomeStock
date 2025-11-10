@@ -1,15 +1,14 @@
 import { ProductRepository } from "../repositories/productRepository";
-import { CreateProductDto } from "../../data/dto/productDto";
 import { Product } from "../entities/productEntity";
 
-export class CreateProductUseCase {
+export class GetProductsByUserIdUseCase {
   private productRepository: ProductRepository;
 
   constructor(productRepository: ProductRepository) {
     this.productRepository = productRepository;
   }
 
-  async execute(dto: CreateProductDto): Promise<Product> {
-    return await this.productRepository.createProduct(dto);
+  async execute(userId: number): Promise<Product[]> {
+    return await this.productRepository.getProductsByUserId(userId);
   }
 }
