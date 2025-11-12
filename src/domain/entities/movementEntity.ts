@@ -1,4 +1,4 @@
-export type MovementType = 'PURCHASE' | 'CONSUMPTION' | 'ADJUSTMENT';
+export type MovementType = "PURCHASE" | "CONSUMPTION" | "ADJUSTMENT";
 
 export interface Movement {
   id: number;
@@ -9,7 +9,6 @@ export interface Movement {
   unitPrice?: number;
   storeId?: number;
   note?: string;
-  occurredAt: string;
-  createdAt: string;
-  updatedAt: string;
+  occurredAt: string;  // Fecha del evento (ISO)
+  createdAt: string;   // Fecha de creación (ISO)
 }
