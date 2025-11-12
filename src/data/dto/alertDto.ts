@@ -1,22 +1,23 @@
 export interface AlertDto {
   id: number;
   userId: number;
-  productId: number;
-  type: "LOW_STOCK" | "EXPIRATION" | "CUSTOM";
+  productId?: number;
+  type: 'LOW_STOCK' | 'EXPIRY';
   message: string;
-  createdAt: Date;
-  updatedAt: Date;
+  triggerAt: string;
+  active: boolean;
+  resolvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateAlertDto {
   userId: number;
-  productId: number;
-  type: "LOW_STOCK" | "EXPIRATION" | "CUSTOM";
+  productId?: number;
+  type: 'LOW_STOCK' | 'EXPIRY';
   message: string;
-}
-
-export interface UpdateAlertDto {
-  message?: string;
+  triggerAt: string;
+  active: boolean;
 }
 
 export interface AlertListDto {
