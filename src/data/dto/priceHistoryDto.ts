@@ -3,12 +3,14 @@ export interface PriceHistoryDto {
   productId: number;
   unitPrice: number;
   storeId: number;
-  createdAt: Date;
-  updatedAt: Date;
+  recordedAt: string; // ✅ Agregado
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreatePriceHistoryDto {
   productId: number;
   unitPrice: number;
   storeId: number;
+  recordedAt: string; // ✅ Agregado
 }
