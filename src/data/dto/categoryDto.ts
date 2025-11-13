@@ -14,7 +14,10 @@ export interface CreateCategoryDto {
 export interface UpdateCategoryDto {
   description?: string;
 }
-
+/*
 export interface CategoryListResponse {
   products: CategoryDto[];
+}*/
+export interface CategoryListResponse {
+  categories: CategoryDto[];
 }
