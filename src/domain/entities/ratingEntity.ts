@@ -1,3 +1,4 @@
+// domain/entities/productRatingEntity.ts
 export interface ProductRating {
   id: number;
   userId: number;
@@ -5,5 +6,5 @@ export interface ProductRating {
   qualityScore: number;
   notes?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
