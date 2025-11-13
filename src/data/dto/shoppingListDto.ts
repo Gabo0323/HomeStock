@@ -1,11 +1,24 @@
+export interface ShoppingListItemDto {
+  id: number;
+  listId: number;
+  productId: number;
+  desiredQuantity: number;
+  checked: boolean;
+  checkedAt?: string;
+  targetStoreId?: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface ShoppingListDto {
   id: number;
   userId: number;
   name: string;
-  note: string;
+  note?: string;
   status: string;
-  createdAt: Date;
-  updatedAt: Date;
+  items?: ShoppingListItemDto[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateShoppingListDto {
@@ -19,12 +32,13 @@ export interface ShoppingListListDto {
 }
 
 export interface AddItemToShoppingListDto {
-  userId: number;
-  name: string;
-  note?: string;
+  productId: number;
+  desiredQuantity: number;
+  targetStoreId?: number;
 }
 
 export interface UpdateShoppingListItemDto {
-  checked: boolean;
+  desiredQuantity?: number;
+  checked?: boolean;
+  targetStoreId?: number;
 }
-
