@@ -3,7 +3,7 @@ import { Alert } from "@/domain/entities/alertEntity";
 import { CreateAlertDto, AlertDto } from "@/data/dto/alertDto";
 import { CreateAlertUseCase } from "@/domain/useCases/createAlertUseCase";
 import { GetActiveAlertsByUserIdUseCase } from "@/domain/useCases/getActiveAlertsByUserIdUseCase";
-import { GetAlertByIdUseCase } from "@/domain/useCases/getAlertByIdUseCase";
+//import { GetAlertByIdUseCase } from "@/domain/useCases/getAlertByIdUseCase";
 import { UpdateAlertUseCase } from "@/domain/useCases/updateAlertUseCase";
 import { CloseAlertUseCase } from "@/domain/useCases/closeAlertUseCase";
 
@@ -12,7 +12,7 @@ import { CloseAlertUseCase } from "@/domain/useCases/closeAlertUseCase";
 export class AlertViewModel {
   private createAlertUseCase: CreateAlertUseCase;
   private getActiveAlertsByUserIdUseCase: GetActiveAlertsByUserIdUseCase;
-  private getAlertByIdUseCase: GetAlertByIdUseCase;
+  //private getAlertByIdUseCase: GetAlertByIdUseCase;
   private updateAlertUseCase: UpdateAlertUseCase;
   private closeAlertUseCase: CloseAlertUseCase;
 
@@ -24,14 +24,14 @@ export class AlertViewModel {
   constructor(
     createAlertUseCase: CreateAlertUseCase,
     getActiveAlertsByUserIdUseCase: GetActiveAlertsByUserIdUseCase,
-    getAlertByIdUseCase: GetAlertByIdUseCase,
+    //getAlertByIdUseCase: GetAlertByIdUseCase,
     updateAlertUseCase: UpdateAlertUseCase,
     closeAlertUseCase: CloseAlertUseCase
   ) {
     makeAutoObservable(this);
     this.createAlertUseCase = createAlertUseCase;
     this.getActiveAlertsByUserIdUseCase = getActiveAlertsByUserIdUseCase;
-    this.getAlertByIdUseCase = getAlertByIdUseCase;
+    //this.getAlertByIdUseCase = getAlertByIdUseCase;
     this.updateAlertUseCase = updateAlertUseCase;
     this.closeAlertUseCase = closeAlertUseCase;
   }
@@ -62,7 +62,7 @@ export class AlertViewModel {
       this.loading = false;
     }
   }
-
+/*
   async getAlertById(alertId: number) {
     this.loading = true;
     this.error = null;
@@ -74,7 +74,7 @@ export class AlertViewModel {
       this.loading = false;
     }
   }
-
+*/
   async updateAlert(alertId: number, dto: Partial<AlertDto>) {
     this.loading = true;
     this.error = null;

@@ -29,7 +29,7 @@ describe("🔹 Register Integration Test", () => {
   });
 
 it("✅ debería registrar un nuevo usuario real en backend y luego hacer login", async () => {
-  const userNumber = 6;
+  const userNumber = 13;
   const dto = {
     email: `gabo${userNumber}@example.com`,
     password: "Password123!",

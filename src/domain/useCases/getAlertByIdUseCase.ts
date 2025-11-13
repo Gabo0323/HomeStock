@@ -1,6 +1,6 @@
 import { Alert } from "@/domain/entities/alertEntity";
 import { AlertRepository } from "@/domain/repositories/alertRepository";
-
+/*
 export class GetAlertByIdUseCase {
   private alertRepository: AlertRepository;
 
@@ -12,3 +12,4 @@ export class GetAlertByIdUseCase {
     return await this.alertRepository.getAlertById(alertId);
   }
 }
+*/

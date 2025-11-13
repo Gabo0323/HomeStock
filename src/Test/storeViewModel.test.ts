@@ -40,15 +40,15 @@ describe(" StoreViewModel Integration Tests", () => {
 
   it("debería crear una store correctamente", async () => {
     const dto: CreateStoreDto = {
-      name: "SuperMercado Jest",
-      location: "Avenida Test 123",
+      name: "SuperMercado Jest 2",
+      location: "Avenida Test 1234",
       notes: "Notas de prueba"
     };
 
     await viewModel.createStore(dto);
 
     expect(viewModel.store).toBeTruthy();
-    expect(viewModel.store?.name).toBe("SuperMercado Jest");
+    expect(viewModel.store?.name).toBe("SuperMercado Jest 2");
 
     createdStoreId = viewModel.store!.id;
 

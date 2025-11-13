@@ -46,7 +46,7 @@ export class AlertRemoteDataSource {
       throw error;
     }
   }
-
+/*
   // Obtener alerta por ID (por si se necesita en pantalla de detalle)
   async getAlertById(alertId: number): Promise<AlertDto> {
     try {
@@ -56,5 +56,5 @@ export class AlertRemoteDataSource {
       console.error("Error al obtener alerta por ID:", error);
       throw error;
     }
-  }
+  }*/
 }

@@ -30,7 +30,7 @@ export class AlertRepositoryImpl implements AlertRepository {
       throw error;
     }
   }
-
+/*
   async getAlertById(alertId: number): Promise<Alert> {
     try {
       const result = await this.remoteDataSource.getAlertById(alertId);
@@ -40,7 +40,7 @@ export class AlertRepositoryImpl implements AlertRepository {
       throw error;
     }
   }
-
+*/
   async updateAlert(alertId: number, dto: Partial<AlertDto>): Promise<Alert> {
     try {
       const result = await this.remoteDataSource.updateAlert(alertId, dto);

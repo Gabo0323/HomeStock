@@ -3,7 +3,7 @@ import { AlertRemoteDataSource } from "@/data/datasources/alertRemoteDataSource"
 import { CreateAlertDto, AlertDto } from "@/data/dto/alertDto";
 import { CreateAlertUseCase } from "@/domain/useCases/createAlertUseCase";
 import { GetActiveAlertsByUserIdUseCase } from "@/domain/useCases/getActiveAlertsByUserIdUseCase";
-import { GetAlertByIdUseCase } from "@/domain/useCases/getAlertByIdUseCase";
+//import { GetAlertByIdUseCase } from "@/domain/useCases/getAlertByIdUseCase";
 import { UpdateAlertUseCase } from "@/domain/useCases/updateAlertUseCase";
 import { CloseAlertUseCase } from "@/domain/useCases/closeAlertUseCase";
 import { AlertViewModel } from "@/presentation/viewModels/alertViewModel";
@@ -14,14 +14,14 @@ const repository = new AlertRepositoryImpl(remoteDataSource);
 
 const createAlertUseCase = new CreateAlertUseCase(repository);
 const getActiveAlertsByUserIdUseCase = new GetActiveAlertsByUserIdUseCase(repository);
-const getAlertByIdUseCase = new GetAlertByIdUseCase(repository);
+//const getAlertByIdUseCase = new GetAlertByIdUseCase(repository);
 const updateAlertUseCase = new UpdateAlertUseCase(repository);
 const closeAlertUseCase = new CloseAlertUseCase(repository);
 
 const viewModel = new AlertViewModel(
   createAlertUseCase,
   getActiveAlertsByUserIdUseCase,
-  getAlertByIdUseCase,
+  //getAlertByIdUseCase,
   updateAlertUseCase,
   closeAlertUseCase
 );
@@ -60,7 +60,7 @@ describe("🧪 AlertViewModel Integration Tests", () => {
 
     console.log("📢 Alertas activas del usuario:", viewModel.alerts);
   });
-
+/*
   it("debería obtener una alerta específica por su ID", async () => {
     await viewModel.getAlertById(createdAlertId);
 
@@ -69,7 +69,7 @@ describe("🧪 AlertViewModel Integration Tests", () => {
 
     console.log("🔍 Alerta obtenida:", viewModel.alert);
   });
-
+*/
   it("debería actualizar el mensaje de la alerta", async () => {
     const updateDto: Partial<AlertDto> = {
       message: "Mensaje actualizado desde Jest",

@@ -8,10 +8,11 @@ import { LogoutUseCase } from "@/domain/useCases/logoutUseCase";
 import { MeUseCase } from "@/domain/useCases/meUseCase";
 import { AuthViewModel } from "@/presentation/viewModels/authViewModel";
 
-describe("🔹 Refresh Token Integration Test", () => {
+describe("🔹 Refresh Token Integration Test (Real Backend)", () => {
   let viewModel: AuthViewModel;
 
   beforeAll(() => {
+    // Conexión real (sin mocks)
     const remote = new AuthRemoteDataSource();
     const repo = new AuthRepositoryImpl(remote);
 
@@ -33,7 +34,7 @@ describe("🔹 Refresh Token Integration Test", () => {
   it("✅ debería refrescar correctamente un token real", async () => {
     const loginDto = { email: "gabo3@example.com", password: "Password123!" };
 
-    // 1️⃣ Hacer login
+    // 1️⃣ Login real contra el backend
     const loginResponse = await viewModel.login(loginDto);
     expect(loginResponse).toBeTruthy();
 
@@ -44,14 +45,11 @@ describe("🔹 Refresh Token Integration Test", () => {
     console.log("🔑 AccessToken:", accessToken);
     console.log("♻️ RefreshToken:", refreshToken);
 
-    // 2️⃣ Simular que AsyncStorage tiene los tokens guardados
-    (AsyncStorage.getItem as jest.Mock).mockImplementation(async (key: string) => {
-      if (key === "accessToken") return accessToken;
-      if (key === "refreshToken") return refreshToken;
-      return null;
-    });
+    // 2️⃣ Guardar tokens reales
+    await AsyncStorage.setItem("accessToken", accessToken);
+    await AsyncStorage.setItem("refreshToken", refreshToken);
 
-    // 3️⃣ Ejecutar el refresh (usa el refreshToken almacenado)
+    // 3️⃣ Ejecutar refresh usando los tokens guardados
     let newAccessToken: string | undefined;
     try {
       newAccessToken = await viewModel.refresh();
@@ -61,7 +59,7 @@ describe("🔹 Refresh Token Integration Test", () => {
       throw err;
     }
 
-    // 4️⃣ Verificar resultados
+    // 4️⃣ Validaciones
     expect(typeof newAccessToken).toBe("string");
     expect(newAccessToken).toBeTruthy();
 
@@ -72,5 +70,13 @@ describe("🔹 Refresh Token Integration Test", () => {
       newAccessToken,
       refreshToken,
     });
-  }, 20000); // timeout extendido
+  }, 20000);
+
+  afterAll(async () => {
+    // 🧹 Limpieza del almacenamiento local
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("refreshToken");
+
+    console.log("🧽 Tokens eliminados del AsyncStorage tras la prueba.");
+  });
 });

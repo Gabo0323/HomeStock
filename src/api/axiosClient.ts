@@ -1,7 +1,8 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const BASE_URL = process.env.BASE_URL ?? "https://backend-homestock.onrender.com/api/v1";
+export const BASE_URL =
+  process.env.BASE_URL ?? "https://backend-homestock.onrender.com/api/v1";
 
 export const axiosClient = axios.create({
   baseURL: BASE_URL,
@@ -10,19 +11,26 @@ export const axiosClient = axios.create({
   },
 });
 
-// Attach Authorization header from AsyncStorage on each request (async interceptor)
+// ✅ Interceptor que añade el token SOLO si no es /auth/refresh ni /auth/login
 axiosClient.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem("accessToken");
-      if (token) {
-        config.headers = config.headers ?? {};
-        config.headers.Authorization = `Bearer ${token}`;
+      // No adjuntar el token si es el endpoint de refresh o login
+      const skipAuth =
+        config.url?.includes("/auth/refresh") || config.url?.includes("/auth/login");
+
+      if (!skipAuth) {
+        const token = await AsyncStorage.getItem("accessToken");
+        if (token) {
+          config.headers = config.headers ?? {};
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
     } catch (e) {
-      // ignore
+      // Ignorar errores de lectura del AsyncStorage
     }
+
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
