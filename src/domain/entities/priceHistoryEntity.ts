@@ -1,4 +1,5 @@
 export interface PriceHistory {
+  amount: number;
   id: number;
   productId: number;
   unitPrice: number;

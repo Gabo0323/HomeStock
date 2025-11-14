@@ -11,5 +11,4 @@ export class GetAlertByIdUseCase {
   async execute(alertId: number): Promise<Alert> {
     return await this.alertRepository.getAlertById(alertId);
   }
-}
-*/
+}*/

@@ -4,6 +4,9 @@ import { useState } from "react"
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
+import { authViewModel } from "../container/authContainer"
+import { RegisterDto } from "@/data/dto/registerDto"
+import React from "react"
 
 interface RegisterScreenProps {
   onRegister: () => void
@@ -21,11 +24,33 @@ export function RegisterScreen({ onRegister, onSwitchToLogin }: RegisterScreenPr
     acceptTerms: false,
   })
 
-  const handleSubmit = () => {
-    if (formData.name && formData.email && formData.password && formData.acceptTerms) {
-      onRegister()
+  const handleSubmit = async () => {
+  try {
+    if (!formData.acceptTerms) {
+      alert("Debes aceptar los términos y condiciones");
+      return;
     }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
+    const dto: RegisterDto = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password.trim(),
+    };
+
+    const user = await authViewModel.register(dto);
+
+    console.log("Usuario registrado:", user);
+    onRegister(); // ← tu navegación ya existente
+  } catch (err: any) {
+    console.error("Error en registro:", err);
+    alert(err.message ?? "Error al registrar");
   }
+};
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

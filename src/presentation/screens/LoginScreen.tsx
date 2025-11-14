@@ -15,6 +15,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import type { StackNavigationProp } from "@react-navigation/stack"
+import { authViewModel } from "../container/authContainer"
+import { LoginDto } from "@/data/dto/loginDto"
+import React from "react"
+
+
 
 const logoImage = require("../assets/70b756a756bbc6dd6b4d1437c0a2812790a64904.png")
 
@@ -27,11 +32,28 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleLogin = () => {
-    if (email && password) {
-      navigation.navigate("Dashboard")
+  const handleLogin = async () => {
+    try {
+      if (!email || !password) {
+        alert("Correo y contraseña requeridos");
+        return;
+      }
+
+      const dto: LoginDto = {
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+      };
+
+      const { user, accessToken, refreshToken } = await authViewModel.login(dto);
+
+      console.log("Login OK:", user, accessToken);
+
+      navigation.navigate("Dashboard");
+    } catch (err: any) {
+      console.error("Error login:", err);
+      alert(err.message ?? "Credenciales incorrectas");
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>

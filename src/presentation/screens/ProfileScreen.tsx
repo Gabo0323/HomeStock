@@ -1,25 +1,79 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native"
-import { Feather } from "@expo/vector-icons"
+import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+
+import { authViewModel, productViewModel, priceHistoryViewModel } from "../container/profileContainer";
+
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, ActivityIndicator } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import React from "react";
 
 interface ProfileScreenProps {
-  onBack: () => void
-  onLogout: () => void
+  onBack: () => void;
+  onLogout: () => void;
 }
 
-export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
-  const user = {
-    name: "María Rodríguez",
-    email: "maria.rodriguez@email.com",
-    phone: "+506 8888-8888",
-    location: "San José, Costa Rica",
-    memberSince: "2025-01-15",
-    totalProducts: 24,
-    totalSavings: 18500,
+export const ProfileScreen = observer(({ onBack, onLogout }: ProfileScreenProps) => {
+  const [loading, setLoading] = useState(true);
+
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    memberSince: "",
+  });
+
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalSavings, setTotalSavings] = useState(0);
+
+  useEffect(() => {
+    loadProfileData();
+  }, []);
+
+  async function loadProfileData() {
+    try {
+      // 1️⃣ Obtener usuario
+      const user = await authViewModel.me();
+
+      setUserData({
+        name: user.name,
+        email: user.email,
+        memberSince: user.createdAt ? (typeof user.createdAt === 'string' ? user.createdAt : user.createdAt.toISOString()) : "2024-01-01",
+      });
+
+      // 2️⃣ Obtener productos del usuario
+      await productViewModel.getProductsByUserId(user.id);
+
+      setTotalProducts(productViewModel.products.length);
+
+      // 3️⃣ Calcular ahorrado
+      let total = 0;
+
+      for (const p of productViewModel.products) {
+        await priceHistoryViewModel.getLastPriceByProductId(p.id);
+        if (priceHistoryViewModel.priceHistory) {
+          total += priceHistoryViewModel.priceHistory.amount;
+        }
+      }
+
+      setTotalSavings(total);
+    } catch (err) {
+      console.error("Error cargando perfil:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent:"center", alignItems:"center" }}>
+        <ActivityIndicator size="large" color="#AC2C2F" />
+      </View>
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onBack} style={styles.backButton}>
@@ -34,91 +88,58 @@ export function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
             <View style={styles.avatar}>
               <Feather name="user" size={48} color="#FFFFFF" />
             </View>
-            <TouchableOpacity style={styles.cameraButton}>
-              <Feather name="camera" size={16} color="#AC2C2F" />
-            </TouchableOpacity>
           </View>
-          <Text style={styles.userName}>{user.name}</Text>
+
+          <Text style={styles.userName}>{userData.name}</Text>
           <Text style={styles.memberSince}>
-            Miembro desde {new Date(user.memberSince).toLocaleDateString("es-CR", { month: "long", year: "numeric" })}
+            Miembro desde{" "}
+            {new Date(userData.memberSince).toLocaleDateString("es-CR", { month: "long", year: "numeric" })}
           </Text>
         </View>
 
         {/* Stats */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>{user.totalProducts}</Text>
+            <Text style={styles.statValue}>{totalProducts}</Text>
             <Text style={styles.statLabel}>Productos</Text>
           </View>
+
           <View style={[styles.statCard, styles.statCardGreen]}>
-            <Text style={styles.statValueGreen}>₡{user.totalSavings.toLocaleString()}</Text>
+            <Text style={styles.statValueGreen}>₡{totalSavings.toLocaleString()}</Text>
             <Text style={styles.statLabel}>Ahorrado</Text>
           </View>
         </View>
 
-        {/* User Information */}
+        {/* Información personal */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Información Personal</Text>
-            <TouchableOpacity>
-              <Feather name="edit-2" size={20} color="#AC2C2F" />
-            </TouchableOpacity>
           </View>
 
           <View style={styles.infoItem}>
             <Feather name="mail" size={20} color="#9CA3AF" />
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Correo electrónico</Text>
-              <Text style={styles.infoValue}>{user.email}</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoItem}>
-            <Feather name="phone" size={20} color="#9CA3AF" />
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Teléfono</Text>
-              <Text style={styles.infoValue}>{user.phone}</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoItem}>
-            <Feather name="map-pin" size={20} color="#9CA3AF" />
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Ubicación</Text>
-              <Text style={styles.infoValue}>{user.location}</Text>
+              <Text style={styles.infoValue}>{userData.email}</Text>
             </View>
           </View>
         </View>
 
-        {/* Achievements */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Logros</Text>
-          <View style={styles.achievementsGrid}>
-            <View style={styles.achievementCard}>
-              <Text style={styles.achievementIcon}>🏆</Text>
-              <Text style={styles.achievementText}>Primer producto</Text>
-            </View>
-            <View style={styles.achievementCard}>
-              <Text style={styles.achievementIcon}>💰</Text>
-              <Text style={styles.achievementText}>Ahorrador</Text>
-            </View>
-            <View style={[styles.achievementCard, styles.achievementLocked]}>
-              <Text style={styles.achievementIcon}>⭐</Text>
-              <Text style={styles.achievementText}>Bloqueado</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Logout Button */}
+        {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
           <Feather name="log-out" size={20} color="#AC2C2F" />
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+});
 
+
+// -----------------------------
+// 🔥 EXACTAMENTE LOS MISMOS STYLES QUE USABAS
+// -----------------------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -159,14 +180,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.2)",
     alignItems: "center",
     justifyContent: "center",
-  },
-  cameraButton: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 8,
   },
   userName: {
     fontSize: 24,
@@ -246,31 +259,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#111827",
   },
-  achievementsGrid: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 16,
-  },
-  achievementCard: {
-    flex: 1,
-    backgroundColor: "#FEE2E2",
-    borderRadius: 12,
-    padding: 12,
-    alignItems: "center",
-  },
-  achievementLocked: {
-    backgroundColor: "#E5E7EB",
-    opacity: 0.5,
-  },
-  achievementIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  achievementText: {
-    fontSize: 12,
-    color: "#111827",
-    textAlign: "center",
-  },
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -289,4 +277,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#AC2C2F",
   },
-})
+});
