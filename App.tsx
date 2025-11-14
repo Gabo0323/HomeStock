@@ -14,6 +14,8 @@ import { RegisterScreen } from "./src/presentation/screens/RegisterScreen"
 import { DashboardScreen } from "./src/presentation/screens/DashboardScreen"
 import { InventoryScreen } from "./src/presentation/screens/InventoryScreen"
 import { AddProductScreen } from "./src/presentation/screens/AddProductScreen"
+import { AddCategoryScreen } from "./src/presentation/screens/AddCategoryScreen"
+import { AddStoreScreen } from "./src/presentation/screens/AddStoreScreen"
 import { ShoppingListScreen } from "./src/presentation/screens/ShoppingListScreen"
 import { ComparisonScreen } from "./src/presentation/screens/ComparisonScreen"
 import { RecommendationsScreen } from "./src/presentation/screens/RecommendationsScreen"
@@ -43,6 +45,16 @@ export default function App() {
   const handleAddProduct = (product: Product) => {
     setProducts([...products, product])
     setCapturedImage(null)
+  }
+
+  const handleAddCategory = (category: any) => {
+    // Manejar categoria agregada si es necesario
+    console.log('Categoria agregada:', category)
+  }
+
+  const handleAddStore = (store: any) => {
+    // Manejar tienda agregada si es necesario
+    console.log('Tienda agregada:', store)
   }
 
   const handleProductClick = (product: Product) => {
@@ -96,9 +108,7 @@ export default function App() {
             <Stack.Screen name="Inventory">
               {({ navigation }) => (
                 <InventoryScreen 
-                  products={products} 
-                  onProductClick={handleProductClick}
-                  onNavigate={(screen: any) => navigation.navigate(screen)}
+                  navigation={navigation}
                 />
               )}
             </Stack.Screen>
@@ -112,9 +122,29 @@ export default function App() {
                 />
               )}
             </Stack.Screen>
+            <Stack.Screen name="addCategory">
+              {({ navigation }) => (
+                <AddCategoryScreen 
+                  onAdd={handleAddCategory}
+                  onBack={() => navigation.goBack()}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="addStore">
+              {({ navigation }) => (
+                <AddStoreScreen 
+                  onBack={() => navigation.goBack()}
+                  onCreated={handleAddStore}
+                />
+              )}
+            </Stack.Screen>
             <Stack.Screen name="ShoppingList">
-              {(props) => (
-                <ShoppingListScreen {...props} shoppingLists={shoppingLists} onUpdateLists={setShoppingLists} />
+              {({ navigation }) => (
+                <ShoppingListScreen 
+                  navigation={navigation}
+                  shoppingLists={shoppingLists} 
+                  onUpdateLists={setShoppingLists} 
+                />
               )}
             </Stack.Screen>
             <Stack.Screen name="Comparison" component={ComparisonScreen} />

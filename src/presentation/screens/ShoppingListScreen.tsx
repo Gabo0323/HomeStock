@@ -11,9 +11,10 @@ const logoImage = require("../assets/70b756a756bbc6dd6b4d1437c0a2812790a64904.pn
 interface ShoppingListScreenProps {
   shoppingLists: ShoppingList[]
   onUpdateLists: (lists: ShoppingList[]) => void
+  navigation: any
 }
 
-export function ShoppingListScreen({ shoppingLists, onUpdateLists }: ShoppingListScreenProps) {
+export function ShoppingListScreen({ shoppingLists, onUpdateLists, navigation }: ShoppingListScreenProps) {
   const [selectedList, setSelectedList] = useState<string | null>(shoppingLists.length > 0 ? shoppingLists[0].id : null)
 
   const currentList = shoppingLists.find((list) => list.id === selectedList)
@@ -76,6 +77,9 @@ export function ShoppingListScreen({ shoppingLists, onUpdateLists }: ShoppingLis
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={() => navigation.navigate("Dashboard")} style={styles.backButton}>
+              <Feather name="arrow-left" size={24} color="#111827" />
+            </TouchableOpacity>
             <Image source={logoImage} style={styles.logo} />
             <Text style={styles.headerTitle}>Lista de Compra</Text>
           </View>
@@ -197,6 +201,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#111827",
+  },
+  backButton: {
+    marginRight: 16,
   },
   addButton: {
     backgroundColor: "#AC2C2F",

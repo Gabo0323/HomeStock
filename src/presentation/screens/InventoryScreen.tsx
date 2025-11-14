@@ -13,7 +13,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { inventoryViewModel } from "../container/inventoryContainer";
-import { authViewModel } from "../container/profileContainer";
+import { authViewModel, productViewModel } from "../container/profileContainer";
+import { shoppingListViewModel } from "../container/shoppingListContainer";
+import { shoppingItemViewModel } from "../container/shoppingItemContainer";
 import React from "react";
 
 const logoImage = require("../assets/70b756a756bbc6dd6b4d1437c0a2812790a64904.png");
@@ -26,25 +28,68 @@ export const InventoryScreen = observer(({ navigation }: any) => {
 
   // 🔥 Cargar inventario al entrar
   useEffect(() => {
-    inventoryViewModel.loadInventory();
+    const loadData = async () => {
+      try {
+        console.log('🚀 Iniciando carga de datos...');
+        
+        // Asegurar que el usuario esté cargado
+        if (!currentUser) {
+          console.log('👤 Cargando usuario...');
+          await authViewModel.me();
+          console.log('✅ Usuario cargado:', authViewModel.user);
+        }
+        
+        console.log('📦 Cargando productos del usuario...');
+        await productViewModel.getProductsByUserId(authViewModel.user?.id || 0);
+        console.log('✅ Productos cargados, total items:', productViewModel.products.length);
+      } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+      }
+    };
+    
+    loadData();
   }, []);
 
-  const products = inventoryViewModel.inventory;
+  const products = productViewModel.products;
+
+  // 🐛 Debug: Información de depuración
+  console.log('🔍 DEBUG - InventoryScreen:');
+  console.log('- Usuario actual:', currentUser);
+  console.log('- Total productos:', products.length);
+  console.log('- Productos:', products);
+  console.log('- Loading:', productViewModel.loading);
+  console.log('- Error:', productViewModel.error);
 
   const filteredProducts = products.filter((product) => {
     // 🔥 Solo mostrar productos del usuario logueado
-    const belongsToUser = product.userId === currentUser?.id;
-    if (!belongsToUser) return false;
+    if (!currentUser || !currentUser.id) {
+      console.log('❌ No hay usuario logueado');
+      return false;
+    }
+    
+    const belongsToUser = product.userId === currentUser.id;
+    if (!belongsToUser) {
+      console.log('❌ Producto no pertenece al usuario:', {
+        productId: product.id,
+        productUserId: product.userId,
+        currentUserId: currentUser.id,
+        productName: product.name
+      });
+      return false;
+    }
 
     const matchesSearch = product.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "Todos" || product.categoryId === selectedCategory;
+      selectedCategory === "Todos" || product.categoryId === Number(selectedCategory);
 
+    console.log('✅ Producto válido:', product.name);
     return matchesSearch && matchesCategory;
   });
+
+  console.log('📊 Productos filtrados:', filteredProducts.length);
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -60,7 +105,7 @@ export const InventoryScreen = observer(({ navigation }: any) => {
           </View>
           <TouchableOpacity
             style={styles.addButton}
-            onPress={() => navigation.navigate("AddProductScreen")}
+            onPress={() => navigation.navigate("AddProduct")}
           >
             <Feather name="plus" size={20} color="#FFFFFF" />
           </TouchableOpacity>

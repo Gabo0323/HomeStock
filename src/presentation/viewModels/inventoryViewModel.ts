@@ -8,7 +8,6 @@ export class InventoryViewModel {
   inventory: any[] = [];
   loading = false;
   error: string | null = null;
-  inventoryRemoteDataSource: any;
 
   constructor(
     private readonly getInventoryPageUseCase: GetInventoryPageUseCase,
@@ -19,13 +18,25 @@ export class InventoryViewModel {
     makeAutoObservable(this);
   }
 
-  async loadInventory() {
+  async loadInventory(page: number = 0, size: number = 1000) {
     try {
       this.loading = true;
-      const items = await this.inventoryRemoteDataSource.getInventory(0, 1000);
+      this.error = null;
+      
+      console.log('🔄 Cargando inventario...', { page, size });
+      
+      const items = await this.getInventoryPageUseCase.execute(page, size);
+      
+      console.log('📦 Inventario cargado:', items);
 
       // aseguramos que sea array
       this.inventory = Array.isArray(items) ? items : [];
+      
+      console.log('✅ Inventario actualizado:', this.inventory.length, 'items');
+    } catch (error: any) {
+      this.error = error?.message || 'Error cargando inventario';
+      console.error('❌ Error cargando inventario:', error);
+      this.inventory = [];
     } finally {
       this.loading = false;
     }

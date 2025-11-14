@@ -7,6 +7,8 @@ export type RootStackParamList = {
   Dashboard: undefined;
   Inventory: undefined;
   AddProduct: undefined;
+  addCategory: undefined;
+  addStore: undefined;
   ShoppingList: undefined;
   Comparison: undefined;
   Recommendations: undefined;
@@ -25,6 +27,8 @@ export type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'Re
 export type DashboardScreenProps = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
 export type InventoryScreenProps = NativeStackScreenProps<RootStackParamList, 'Inventory'>;
 export type AddProductScreenProps = NativeStackScreenProps<RootStackParamList, 'AddProduct'>;
+export type AddCategoryScreenProps = NativeStackScreenProps<RootStackParamList, 'addCategory'>;
+export type AddStoreScreenProps = NativeStackScreenProps<RootStackParamList, 'addStore'>;
 export type ShoppingListScreenProps = NativeStackScreenProps<RootStackParamList, 'ShoppingList'>;
 export type ComparisonScreenProps = NativeStackScreenProps<RootStackParamList, 'Comparison'>;
 export type RecommendationsScreenProps = NativeStackScreenProps<RootStackParamList, 'Recommendations'>;
