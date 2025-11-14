@@ -26,21 +26,34 @@ export const InventoryScreen = observer(({ navigation }: any) => {
 
   const currentUser = authViewModel.user;
 
+  // 🔍 DEBUG: Usuario ID al cargar componente
+  console.log('👤 [InventoryScreen] Usuario actual al cargar:', {
+    user: currentUser,
+    userId: currentUser?.id || 'NO_USER_ID',
+    userName: currentUser?.name || 'NO_NAME'
+  });
+
   // 🔥 Cargar inventario al entrar
   useEffect(() => {
     const loadData = async () => {
       try {
         console.log('🚀 Iniciando carga de datos...');
         
-        // Asegurar que el usuario esté cargado
-        if (!currentUser) {
-          console.log('👤 Cargando usuario...');
-          await authViewModel.me();
-          console.log('✅ Usuario cargado:', authViewModel.user);
+        // 🔧 FIX: SIEMPRE cargar el usuario para asegurar que esté actualizado
+        console.log('👤 Cargando usuario...');
+        const loadedUser = await authViewModel.me();
+        console.log('✅ Usuario cargado:', loadedUser);
+        console.log('🆔 [DEBUG] USER ID después de me():', loadedUser?.id);
+        console.log('🆔 [DEBUG] authViewModel.user después de me():', authViewModel.user?.id);
+        
+        if (!loadedUser || !loadedUser.id) {
+          console.error('❌ No se pudo cargar el usuario o no tiene ID');
+          return;
         }
         
         console.log('📦 Cargando productos del usuario...');
-        await productViewModel.getProductsByUserId(authViewModel.user?.id || 0);
+        console.log('🆔 [DEBUG] USER ID para cargar productos:', loadedUser.id);
+        await productViewModel.getProductsByUserId(loadedUser.id);
         console.log('✅ Productos cargados, total items:', productViewModel.products.length);
       } catch (error) {
         console.error('❌ Error cargando datos:', error);
@@ -54,6 +67,7 @@ export const InventoryScreen = observer(({ navigation }: any) => {
 
   // 🐛 Debug: Información de depuración
   console.log('🔍 DEBUG - InventoryScreen:');
+  console.log('🆔 [DEBUG] CURRENT USER ID:', currentUser?.id || 'UNDEFINED');
   console.log('- Usuario actual:', currentUser);
   console.log('- Total productos:', products.length);
   console.log('- Productos:', products);
@@ -64,10 +78,19 @@ export const InventoryScreen = observer(({ navigation }: any) => {
     // 🔥 Solo mostrar productos del usuario logueado
     if (!currentUser || !currentUser.id) {
       console.log('❌ No hay usuario logueado');
+      console.log('🆔 [DEBUG] currentUser:', currentUser);
+      console.log('🆔 [DEBUG] currentUser.id:', currentUser?.id);
       return false;
     }
     
     const belongsToUser = product.userId === currentUser.id;
+    console.log('🔍 [DEBUG] Comparando USER IDs:', {
+      'product.userId': product.userId,
+      'currentUser.id': currentUser.id,
+      'belongsToUser': belongsToUser,
+      'productName': product.name
+    });
+    
     if (!belongsToUser) {
       console.log('❌ Producto no pertenece al usuario:', {
         productId: product.id,
@@ -129,11 +152,33 @@ export const InventoryScreen = observer(({ navigation }: any) => {
         </View>
       </View>
 
+      {/* Debug Info - Temporal */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugTitle}>🔍 DEBUG INFO</Text>
+        <Text style={styles.debugText}>👤 Usuario ID: {currentUser?.id || 'NO_USER_ID'}</Text>
+        <Text style={styles.debugText}>👤 Usuario Nombre: {currentUser?.name || 'NO_NAME'}</Text>
+        <Text style={styles.debugText}>📦 Total Productos: {products.length}</Text>
+        <Text style={styles.debugText}>📊 Productos Filtrados: {filteredProducts.length}</Text>
+        <Text style={styles.debugText}>⏳ Loading: {productViewModel.loading ? 'SÍ' : 'NO'}</Text>
+        <Text style={styles.debugText}>❌ Error: {productViewModel.error || 'NINGUNO'}</Text>
+        {products.length > 0 && (
+          <Text style={styles.debugText}>
+            🏷️ Primer Producto UserID: {products[0]?.userId || 'NO_USER_ID'}
+          </Text>
+        )}
+      </View>
+
       {/* Product List */}
       <ScrollView style={styles.productList}>
         {filteredProducts.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>No se encontraron productos</Text>
+            <Text style={styles.emptyStateSubtext}>
+              {products.length > 0 
+                ? `Hay ${products.length} productos pero no pertenecen al usuario actual`
+                : 'No hay productos cargados desde la API'
+              }
+            </Text>
           </View>
         ) : (
           filteredProducts.map((product) => (
@@ -247,5 +292,33 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     color: "#9CA3AF",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  emptyStateSubtext: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: "center",
+  },
+  // 🐛 Estilos temporales para debug
+  debugContainer: {
+    backgroundColor: "#FFF3CD",
+    margin: 16,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#FFEAA7",
+  },
+  debugTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#856404",
+    marginBottom: 8,
+  },
+  debugText: {
+    fontSize: 12,
+    color: "#856404",
+    marginBottom: 4,
   },
 });

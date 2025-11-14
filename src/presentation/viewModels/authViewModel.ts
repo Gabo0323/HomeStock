@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { makeAutoObservable } from "mobx";
 import { LoginDto } from "@/data/dto/loginDto";
 import { RegisterDto } from "@/data/dto/registerDto";
 import { User } from "@/domain/entities/userEntity";
@@ -27,6 +28,7 @@ export class AuthViewModel {
     logoutUseCase: LogoutUseCase,
     meUseCase: MeUseCase
   ) {
+    makeAutoObservable(this); // 🔧 FIX: Hacer observable para MobX
     this.loginUseCase = loginUseCase;
     this.registerUseCase = registerUseCase;
     this.refreshTokenUseCase = refreshTokenUseCase;
@@ -46,15 +48,19 @@ export class AuthViewModel {
    * Realiza el login y guarda los tokens localmente
    */
   async login(dto: LoginDto): Promise<{ user: User; accessToken: string; refreshToken: string }> {
-  const { user, accessToken, refreshToken } = await this.loginUseCase.execute(dto);
+    const { user, accessToken, refreshToken } = await this.loginUseCase.execute(dto);
 
-  // Guarda los tokens en el almacenamiento local
-  await AsyncStorage.setItem("accessToken", accessToken);
-  await AsyncStorage.setItem("refreshToken", refreshToken);
+    // Guarda los tokens en el almacenamiento local
+    await AsyncStorage.setItem("accessToken", accessToken);
+    await AsyncStorage.setItem("refreshToken", refreshToken);
 
-  // ✅ Devuelve el objeto completo (útil para los tests y refresh)
-  return { user, accessToken, refreshToken };
-}
+    // 🔧 FIX: Asignar el usuario al ViewModel después del login
+    this.user = user;
+    console.log('✅ [AuthViewModel] Usuario logueado y asignado:', user);
+
+    // ✅ Devuelve el objeto completo (útil para los tests y refresh)
+    return { user, accessToken, refreshToken };
+  }
 
   /**
    * Refresca el token de acceso usando el refresh token almacenado
@@ -79,6 +85,10 @@ export class AuthViewModel {
     }
     await AsyncStorage.removeItem("accessToken");
     await AsyncStorage.removeItem("refreshToken");
+    
+    // 🔧 FIX: Limpiar el usuario del ViewModel
+    this.user = null;
+    console.log('✅ [AuthViewModel] Usuario deslogueado y limpiado');
   }
 
   /**
@@ -86,6 +96,8 @@ export class AuthViewModel {
    */
   async me(): Promise<User> {
     const user = await this.meUseCase.execute();
+    this.user = user; // 🔧 FIX: Asignar el usuario al ViewModel
+    console.log('✅ [AuthViewModel] Usuario cargado y asignado:', user);
     return user;
   }
 }
