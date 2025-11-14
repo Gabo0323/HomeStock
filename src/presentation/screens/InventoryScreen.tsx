@@ -114,6 +114,151 @@ export const InventoryScreen = observer(({ navigation }: any) => {
 
   console.log('📊 Productos filtrados:', filteredProducts.length);
 
+  // ➕ Función para aumentar cantidad de producto
+  const handleIncreaseQuantity = async (product: any) => {
+    try {
+      const newQuantity = product.quantity + 1;
+      
+      console.log('📈 Aumentando cantidad:', {
+        productId: product.id,
+        productName: product.name,
+        currentQuantity: product.quantity,
+        newQuantity: newQuantity
+      });
+      
+      await productViewModel.updateProduct(product.id, {
+        ...product,
+        quantity: newQuantity
+      });
+      
+      console.log('✅ Cantidad aumentada en backend');
+      
+      // Recargar la lista de productos para asegurar sincronización
+      if (currentUser?.id) {
+        console.log('🔄 Recargando lista de productos...');
+        await productViewModel.getProductsByUserId(currentUser.id);
+        console.log('✅ Lista recargada, total productos:', productViewModel.products.length);
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Error al aumentar cantidad:', error);
+      alert('Error al aumentar la cantidad. Intenta nuevamente.');
+    }
+  };
+
+  // 🗑️ Función para eliminar/reducir cantidad de producto
+  const handleReduceQuantity = async (product: any) => {
+    try {
+      const newQuantity = product.quantity - 1;
+      
+      console.log('🔍 [DEBUG] Procesando producto:', {
+        productId: product.id,
+        productName: product.name,
+        currentQuantity: product.quantity,
+        newQuantity: newQuantity,
+        willDelete: newQuantity <= 0
+      });
+      
+      if (newQuantity <= 0) {
+        // Si la cantidad llega a 0, eliminar el producto completamente
+        console.log('🗑️ Eliminando producto completamente:', product.name, 'ID:', product.id);
+        
+        await productViewModel.deleteProduct(product.id);
+        console.log('✅ Producto eliminado del backend');
+        
+        // Verificar si se eliminó del array local
+        const productStillExists = productViewModel.products.find(p => p.id === product.id);
+        console.log('🔍 [DEBUG] Producto aún existe en array local:', !!productStillExists);
+        
+        // Si el producto aún existe en el array local, recargar la lista
+        if (productStillExists && currentUser?.id) {
+          console.log('🔄 Producto aún en array local, recargando lista...');
+          await productViewModel.getProductsByUserId(currentUser.id);
+          console.log('✅ Lista recargada después de eliminar');
+        }
+        
+      } else {
+        // Si aún hay cantidad, solo reducir en 1
+        console.log('📉 Reduciendo cantidad de', product.name, 'de', product.quantity, 'a', newQuantity);
+        
+        await productViewModel.updateProduct(product.id, {
+          ...product,
+          quantity: newQuantity
+        });
+        console.log('✅ Cantidad actualizada en backend');
+        
+        // Recargar la lista de productos para asegurar sincronización
+        if (currentUser?.id) {
+          console.log('🔄 Recargando lista de productos...');
+          await productViewModel.getProductsByUserId(currentUser.id);
+          console.log('✅ Lista recargada, total productos:', productViewModel.products.length);
+        }
+      }
+      
+      console.log('🏁 [DEBUG] Operación completada. Productos finales:', productViewModel.products.length);
+      
+    } catch (error: any) {
+      console.error('❌ Error en handleReduceQuantity:', error);
+      console.error('❌ Error details:', {
+        message: error?.message,
+        status: error?.response?.status,
+        statusText: error?.response?.statusText,
+        data: error?.response?.data,
+        productId: product?.id,
+        productName: product?.name
+      });
+      
+      // Manejo específico del error 409 (Conflict)
+      if (error?.response?.status === 409) {
+        console.log('⚠️ Error 409 - Conflicto al eliminar producto');
+        console.log('💡 Detalles del error:', error?.response?.data);
+        
+        // Extraer información específica del error
+        const errorMessage = error?.response?.data?.message || '';
+        let userMessage = 'No se puede eliminar este producto porque tiene dependencias.';
+        
+        if (errorMessage.includes('price_history')) {
+          userMessage = 'No se puede eliminar este producto porque tiene un historial de precios asociado. Este historial es importante para mantener el registro de cambios de precios.';
+        } else if (errorMessage.includes('inventory')) {
+          userMessage = 'No se puede eliminar este producto porque tiene movimientos de inventario asociados.';
+        } else if (errorMessage.includes('shopping')) {
+          userMessage = 'No se puede eliminar este producto porque está en listas de compras.';
+        }
+        
+        console.log('🔄 Intentando recargar la lista de productos...');
+        
+        // Recargar la lista para ver el estado actual
+        if (currentUser?.id) {
+          await productViewModel.getProductsByUserId(currentUser.id);
+          console.log('✅ Lista recargada después del error 409');
+        }
+        
+        // Reducir automáticamente a 0 como alternativa
+        try {
+          console.log('🔄 Reduciendo cantidad a 0 automáticamente...');
+          await productViewModel.updateProduct(product.id, {
+            ...product,
+            quantity: 0
+          });
+          
+          // Recargar la lista
+          if (currentUser?.id) {
+            await productViewModel.getProductsByUserId(currentUser.id);
+            console.log('✅ Cantidad reducida a 0 exitosamente');
+          }
+          
+          alert('✅ Cantidad reducida a 0. El producto se mantiene con stock 0 para preservar el historial.');
+        } catch (updateError) {
+          console.error('❌ Error al reducir cantidad a 0:', updateError);
+          alert('Error al actualizar la cantidad. Intenta nuevamente.');
+        }
+      } else {
+        // Otros errores
+        alert('Error al procesar la operación. Intenta nuevamente.');
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* Header */}
@@ -152,22 +297,6 @@ export const InventoryScreen = observer(({ navigation }: any) => {
         </View>
       </View>
 
-      {/* Debug Info - Temporal */}
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugTitle}>🔍 DEBUG INFO</Text>
-        <Text style={styles.debugText}>👤 Usuario ID: {currentUser?.id || 'NO_USER_ID'}</Text>
-        <Text style={styles.debugText}>👤 Usuario Nombre: {currentUser?.name || 'NO_NAME'}</Text>
-        <Text style={styles.debugText}>📦 Total Productos: {products.length}</Text>
-        <Text style={styles.debugText}>📊 Productos Filtrados: {filteredProducts.length}</Text>
-        <Text style={styles.debugText}>⏳ Loading: {productViewModel.loading ? 'SÍ' : 'NO'}</Text>
-        <Text style={styles.debugText}>❌ Error: {productViewModel.error || 'NINGUNO'}</Text>
-        {products.length > 0 && (
-          <Text style={styles.debugText}>
-            🏷️ Primer Producto UserID: {products[0]?.userId || 'NO_USER_ID'}
-          </Text>
-        )}
-      </View>
-
       {/* Product List */}
       <ScrollView style={styles.productList}>
         {filteredProducts.length === 0 ? (
@@ -182,24 +311,72 @@ export const InventoryScreen = observer(({ navigation }: any) => {
           </View>
         ) : (
           filteredProducts.map((product) => (
-            <TouchableOpacity
-              key={product.id}
-              style={styles.productCard}
-              onPress={() =>
-                navigation.navigate("ProductDetailScreen", { product })
-              }
-            >
-              <Image
-                source={{ uri: product.imageUrl }}
-                style={styles.productImage}
-              />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productQuantity}>
-                  Cantidad: {product.quantity}
-                </Text>
+            <View key={product.id} style={[
+              styles.productCard,
+              product.quantity === 0 && styles.productCardOutOfStock
+            ]}>
+              <TouchableOpacity
+                style={styles.productMainContent}
+                onPress={() =>
+                  navigation.navigate("ProductDetailScreen", { product })
+                }
+              >
+                <Image
+                  source={{ uri: product.imageUrl || 'https://via.placeholder.com/70x70/e5e7eb/9ca3af?text=IMG' }}
+                  style={[
+                    styles.productImage,
+                    product.quantity === 0 && styles.productImageOutOfStock
+                  ]}
+                />
+                <View style={styles.productInfo}>
+                  <Text style={[
+                    styles.productName,
+                    product.quantity === 0 && styles.productNameOutOfStock
+                  ]}>
+                    {product.name}
+                    {product.quantity === 0 && ' (Sin stock)'}
+                  </Text>
+                  <Text style={[
+                    styles.productQuantity,
+                    product.quantity === 0 && styles.productQuantityOutOfStock
+                  ]}>
+                    Cantidad: {product.quantity}
+                  </Text>
+                  {product.brand && (
+                    <Text style={[
+                      styles.productBrand,
+                      product.quantity === 0 && styles.productBrandOutOfStock
+                    ]}>
+                      {product.brand}
+                    </Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+              
+              {/* Botones de cantidad */}
+              <View style={styles.productActions}>
+                <TouchableOpacity
+                  style={styles.increaseButton}
+                  onPress={() => handleIncreaseQuantity(product)}
+                >
+                  <Feather 
+                    name="plus" 
+                    size={18} 
+                    color="#16A34A" 
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.reduceButton}
+                  onPress={() => handleReduceQuantity(product)}
+                >
+                  <Feather 
+                    name={product.quantity > 1 ? "minus" : "trash-2"} 
+                    size={18} 
+                    color="#AC2C2F" 
+                  />
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           ))
         )}
       </ScrollView>
@@ -301,24 +478,60 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
   },
-  // 🐛 Estilos temporales para debug
-  debugContainer: {
-    backgroundColor: "#FFF3CD",
-    margin: 16,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#FFEAA7",
+  // 🎨 Estilos mejorados para tarjetas de producto
+  productMainContent: {
+    flexDirection: "row",
+    flex: 1,
+    gap: 12,
   },
-  debugTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#856404",
-    marginBottom: 8,
-  },
-  debugText: {
+  productBrand: {
+    color: "#9CA3AF",
     fontSize: 12,
-    color: "#856404",
-    marginBottom: 4,
+    marginTop: 2,
+  },
+  productActions: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: 12,
+    gap: 8,
+  },
+  increaseButton: {
+    backgroundColor: "#F0FDF4",
+    borderWidth: 1,
+    borderColor: "#BBF7D0",
+    borderRadius: 8,
+    padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  reduceButton: {
+    backgroundColor: "#FEF2F2",
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    borderRadius: 8,
+    padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  // 🎨 Estilos para productos sin stock
+  productCardOutOfStock: {
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    opacity: 0.7,
+  },
+  productImageOutOfStock: {
+    opacity: 0.5,
+  },
+  productNameOutOfStock: {
+    color: "#6B7280",
+    fontStyle: "italic",
+  },
+  productQuantityOutOfStock: {
+    color: "#EF4444",
+    fontWeight: "600",
+  },
+  productBrandOutOfStock: {
+    color: "#9CA3AF",
   },
 });

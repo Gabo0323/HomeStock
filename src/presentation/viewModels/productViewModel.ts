@@ -5,7 +5,7 @@ import { GetProductByIdUseCase } from "@/domain/useCases/getProductByIdUseCase";
 import { GetProductsByUserIdUseCase } from "@/domain/useCases/getProductsByUseCase";
 import { CreateProductUseCase } from "@/domain/useCases/productUseCase";
 import { UpdateProductUseCase } from "@/domain/useCases/updateProductUseCase";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, action } from "mobx";
 
 
 export class ProductViewModel {
@@ -35,6 +35,7 @@ export class ProductViewModel {
     this.deleteProductUseCase = deleteProductUseCase;
   }
 
+  @action
   async createProduct(dto: CreateProductDto) {
     this.loading = true;
     this.error = null;
@@ -48,7 +49,8 @@ export class ProductViewModel {
     }
   }
 
-    async getProductsByUserId(userId: number) {
+  @action
+  async getProductsByUserId(userId: number) {
     this.loading = true;
     this.error = null;
     try {
@@ -60,7 +62,8 @@ export class ProductViewModel {
     }
   }
 
-    async getProductById(productId: number) {
+  @action
+  async getProductById(productId: number) {
     this.loading = true;
     this.error = null;
     try {
@@ -72,7 +75,8 @@ export class ProductViewModel {
     }
   }
 
-    async updateProduct(productId: number, dto: ProductDto) {
+  @action
+  async updateProduct(productId: number, dto: ProductDto) {
     this.loading = true;
     this.error = null;
     try {
@@ -84,14 +88,33 @@ export class ProductViewModel {
     }
   }
 
-    async deleteProduct(productId: number) {
+  @action
+  async deleteProduct(productId: number) {
     this.loading = true;
     this.error = null;
     try {
       await this.deleteProductUseCase.execute(productId);
+      // Solo remover del array local si la eliminación fue exitosa
       this.products = this.products.filter((p) => p.id !== productId);
+      console.log('✅ Producto eliminado exitosamente del backend y array local');
     } catch (err: any) {
-      this.error = err.message || "Error al eliminar producto";
+      console.log('❌ Error en ProductViewModel.deleteProduct:', err);
+      
+      // Manejo específico de diferentes códigos de error
+      if (err?.response?.status === 409) {
+        this.error = "No se puede eliminar el producto porque tiene dependencias asociadas";
+        console.log('⚠️ Error 409: Producto tiene dependencias');
+      } else if (err?.response?.status === 404) {
+        this.error = "El producto no fue encontrado";
+        console.log('⚠️ Error 404: Producto no encontrado');
+        // Remover del array local si no existe en el backend
+        this.products = this.products.filter((p) => p.id !== productId);
+      } else {
+        this.error = err.message || "Error al eliminar producto";
+      }
+      
+      // Re-lanzar el error para que lo maneje el componente
+      throw err;
     } finally {
       this.loading = false;
     }

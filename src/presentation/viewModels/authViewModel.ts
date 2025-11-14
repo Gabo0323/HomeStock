@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, action } from "mobx";
 import { LoginDto } from "@/data/dto/loginDto";
 import { RegisterDto } from "@/data/dto/registerDto";
 import { User } from "@/domain/entities/userEntity";
@@ -76,8 +76,9 @@ export class AuthViewModel {
   }
 
   /**
-   * Cierra sesión en backend y limpia los tokens
+   * Realiza el logout y limpia los tokens locales
    */
+  @action
   async logout(): Promise<void> {
     const refreshToken = await AsyncStorage.getItem("refreshToken");
     if (refreshToken) {
@@ -94,6 +95,7 @@ export class AuthViewModel {
   /**
    * Devuelve la información del usuario actual
    */
+  @action
   async me(): Promise<User> {
     const user = await this.meUseCase.execute();
     this.user = user; // 🔧 FIX: Asignar el usuario al ViewModel
