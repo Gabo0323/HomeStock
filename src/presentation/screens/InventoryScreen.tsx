@@ -1,94 +1,68 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, StyleSheet } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { Feather } from "@expo/vector-icons"
-import { type Product, CATEGORIES } from "../../lib/types"
+import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import {
+  View, Text, ScrollView, TouchableOpacity, Image,
+  TextInput, StyleSheet
+} from "react-native";
 
-const logoImage = require("../assets/70b756a756bbc6dd6b4d1437c0a2812790a64904.png")
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
 
-interface InventoryScreenProps {
-  products: Product[]
-  onNavigate: (screen: string) => void
-  onProductClick: (product: Product) => void
-  onBack: () => void
-}
+import { inventoryViewModel } from "../container/inventoryContainer";
+import { authViewModel } from "../container/profileContainer";
 
-export function InventoryScreen({ products, onNavigate, onProductClick, onBack }: InventoryScreenProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("Todos")
+import React from "react";
+const logoImage = require("../assets/70b756a756bbc6dd6b4d1437c0a2812790a64904.png");
+
+export const InventoryScreen = observer(({ navigation }: any) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
+
+  // 🔥 Cargar inventario al entrar
+  useEffect(() => {
+    inventoryViewModel.loadInventory(0, 50);
+  }, []);
+
+  const products = inventoryViewModel.inventory;
 
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === "Todos" || product.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "good":
-        return "#D1FAE5"
-      case "warning":
-        return "#FEF3C7"
-      case "low":
-        return "#FED7AA"
-      case "expired":
-        return "#FEE2E2"
-      default:
-        return "#F3F4F6"
-    }
-  }
+    const matchesCategory =
+      selectedCategory === "Todos" ||
+      product.categoryId === selectedCategory;
 
-  const getStatusTextColor = (status: string) => {
-    switch (status) {
-      case "good":
-        return "#047857"
-      case "warning":
-        return "#A16207"
-      case "low":
-        return "#C2410C"
-      case "expired":
-        return "#B91C1C"
-      default:
-        return "#374151"
-    }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "good":
-        return "Disponible"
-      case "warning":
-        return "Por vencer"
-      case "low":
-        return "Stock bajo"
-      case "expired":
-        return "Vencido"
-      default:
-        return ""
-    }
-  }
+    return matchesSearch && matchesCategory;
+  });
 
   return (
-    
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}>
               <Feather name="arrow-left" size={24} color="#111827" />
             </TouchableOpacity>
+
+
             <Image source={logoImage} style={styles.logo} />
             <Text style={styles.headerTitle}>Inventario</Text>
           </View>
-          <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("add-product")}>
+
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate("AddProductScreen")}
+          >
             <Feather name="plus" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
-    
-        {/* Search Bar */}
+
+        {/* Search */}
         <View style={styles.searchContainer}>
           <Feather name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
           <TextInput
@@ -99,227 +73,66 @@ export function InventoryScreen({ products, onNavigate, onProductClick, onBack }
             placeholderTextColor="#9CA3AF"
           />
         </View>
-
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-          contentContainerStyle={styles.categoryContent}
-        >
-          {CATEGORIES.map((category) => (
-            <TouchableOpacity
-              key={category}
-              onPress={() => setSelectedCategory(category)}
-              style={[styles.categoryButton, selectedCategory === category && styles.categoryButtonActive]}
-            >
-              <Text
-                style={[styles.categoryButtonText, selectedCategory === category && styles.categoryButtonTextActive]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
       </View>
 
       {/* Product List */}
-      <ScrollView style={styles.productList} contentContainerStyle={styles.productListContent}>
+      <ScrollView style={styles.productList}>
         {filteredProducts.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>No se encontraron productos</Text>
           </View>
         ) : (
           filteredProducts.map((product) => (
-            <TouchableOpacity key={product.id} style={styles.productCard} onPress={() => onProductClick(product)}>
-              <Image source={{ uri: product.image }} style={styles.productImage} />
+            <TouchableOpacity
+              key={product.id}
+              style={styles.productCard}
+              onPress={() => navigation.navigate("ProductDetailScreen", { product })}
+            >
+              <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
               <View style={styles.productInfo}>
                 <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productMeta}>
-                  {product.brand} • {product.store}
-                </Text>
-                <View style={styles.productFooter}>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(product.status) }]}>
-                    <Text style={[styles.statusText, { color: getStatusTextColor(product.status) }]}>
-                      {getStatusText(product.status)}
-                    </Text>
-                  </View>
-                  <Text style={styles.productQuantity}>
-                    {product.quantity} {product.unit}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.productRight}>
-                <Text style={styles.productPrice}>₡{product.price.toLocaleString()}</Text>
-                <Text style={styles.productExpiry}>
-                  Vence: {new Date(product.expirationDate).toLocaleDateString("es-CR")}
-                </Text>
+                <Text style={styles.productQuantity}>Cantidad: {product.quantity}</Text>
               </View>
             </TouchableOpacity>
           ))
         )}
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+});
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-  },
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  logo: {
-    width: 32,
-    height: 32,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  addButton: {
-    backgroundColor: "#AC2C2F",
-    padding: 8,
-    borderRadius: 12,
-  },
-  backButton: {
-    marginRight: 16,
-  },
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  header: { backgroundColor: "#FFF", padding: 16, borderBottomWidth: 1, borderBottomColor: "#E5E7EB" },
+  headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
+  logo: { width: 32, height: 32 },
+  headerTitle: { fontSize: 18, fontWeight: "600" },
+  addButton: { backgroundColor: "#AC2C2F", padding: 8, borderRadius: 12 },
+  backButton: { marginRight: 12 },
   searchContainer: {
+    marginTop: 16,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F9FAFB",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    paddingHorizontal: 12,
-    marginBottom: 16,
+    backgroundColor: "#F3F4F6",
+    padding: 12,
+    borderRadius: 12
   },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    height: 44,
-    fontSize: 14,
-    color: "#111827",
-  },
-  categoryScroll: {
-    marginHorizontal: -24,
-  },
-  categoryContent: {
-    paddingHorizontal: 24,
-    gap: 8,
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  categoryButtonActive: {
-    backgroundColor: "#AC2C2F",
-    borderColor: "#AC2C2F",
-  },
-  categoryButtonText: {
-    fontSize: 14,
-    color: "#111827",
-  },
-  categoryButtonTextActive: {
-    color: "#FFFFFF",
-  },
-  productList: {
-    flex: 1,
-  },
-  productListContent: {
-    padding: 16,
-    gap: 12,
-  },
-  emptyState: {
-    paddingVertical: 48,
-    alignItems: "center",
-  },
-  emptyStateText: {
-    fontSize: 14,
-    color: "#9CA3AF",
-  },
+  searchIcon: { marginRight: 8 },
+  searchInput: { flex: 1, marginLeft: 8 },
+  productList: { padding: 16 },
   productCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
     padding: 16,
+    borderRadius: 14,
     flexDirection: "row",
-    gap: 16,
     marginBottom: 12,
+    gap: 12
   },
-  productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-  },
-  productInfo: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
-    marginBottom: 4,
-  },
-  productMeta: {
-    fontSize: 12,
-    color: "#9CA3AF",
-    marginBottom: 8,
-  },
-  productFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  productQuantity: {
-    fontSize: 12,
-    color: "#111827",
-  },
-  productRight: {
-    alignItems: "flex-end",
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  productExpiry: {
-    fontSize: 10,
-    color: "#9CA3AF",
-    marginTop: 4,
-  },
-})
+  productImage: { width: 70, height: 70, borderRadius: 10 },
+  productInfo: { flex: 1 },
+  productName: { fontSize: 16, fontWeight: "600" },
+  productQuantity: { color: "#4B5563", marginTop: 4 },
+  emptyState: { alignItems: "center", paddingTop: 40 },
+  emptyStateText: { color: "#9CA3AF" }
+});
