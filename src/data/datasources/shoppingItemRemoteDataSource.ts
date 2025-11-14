@@ -8,7 +8,7 @@ import type {
 export class ShoppingItemRemoteDataSource {
   async createShoppingItem(dto: CreateShoppingItemDto): Promise<ShoppingItemDto> {
     try {
-      const response = await axiosClient.post("/api/v1/shopping-items", dto);
+      const response = await axiosClient.post("/shopping-items", dto);
       return response.data;
     } catch (error: any) {
       console.error("Error al crear shopping item:", error);
@@ -18,7 +18,7 @@ export class ShoppingItemRemoteDataSource {
 
   async getPendingShoppingItems(userId: number): Promise<ShoppingItemDto[]> {
     try {
-      const response = await axiosClient.get(`/api/v1/users/${userId}/shopping-items`);
+      const response = await axiosClient.get(`/users/${userId}/shopping-items`);
       return response.data;
     } catch (error: any) {
       console.error("Error al obtener shopping items pendientes:", error);
@@ -32,7 +32,7 @@ export class ShoppingItemRemoteDataSource {
   ): Promise<ShoppingItemDto> {
     try {
       const response = await axiosClient.patch(
-        `/api/v1/shopping-items/${shoppingItemId}`,
+        `/shopping-items/${shoppingItemId}`,
         dto,
       );
       return response.data;

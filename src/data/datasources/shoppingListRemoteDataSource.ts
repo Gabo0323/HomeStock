@@ -10,7 +10,7 @@ import type {
 export class ShoppingListRemoteDataSource {
   async createShoppingList(dto: CreateShoppingListDto): Promise<ShoppingListDto> {
     try {
-      const response = await axiosClient.post("/api/v1/shopping-lists", dto);
+      const response = await axiosClient.post("/shopping-lists", dto);
       return response.data;
     } catch (error: any) {
       console.error("Error al crear lista de compras:", error);
@@ -20,7 +20,7 @@ export class ShoppingListRemoteDataSource {
 
   async getShoppingListsByUserId(userId: number): Promise<ShoppingListDto[]> {
     try {
-      const response = await axiosClient.get("/api/v1/shopping-lists", { params: { userId } });
+      const response = await axiosClient.get("/shopping-lists", { params: { userId } });
       return response.data;
     } catch (error: any) {
       console.error("Error al obtener listas de compras del usuario:", error);
@@ -30,7 +30,7 @@ export class ShoppingListRemoteDataSource {
 
   async getShoppingListById(shoppingListId: number): Promise<ShoppingListDto> {
     try {
-      const response = await axiosClient.get(`/api/v1/shopping-lists/${shoppingListId}`);
+      const response = await axiosClient.get(`/shopping-lists/${shoppingListId}`);
       return response.data;
     } catch (error: any) {
       console.error("Error al obtener detalle de lista de compras:", error);
@@ -44,7 +44,7 @@ export class ShoppingListRemoteDataSource {
   ): Promise<ShoppingListItemDto> {
     try {
       const response = await axiosClient.post(
-        `/api/v1/shopping-lists/${shoppingListId}/items`,
+        `/shopping-lists/${shoppingListId}/items`,
         dto,
       );
       return response.data;
@@ -61,7 +61,7 @@ export class ShoppingListRemoteDataSource {
   ): Promise<ShoppingListItemDto> {
     try {
       const response = await axiosClient.patch(
-        `/api/v1/shopping-lists/${shoppingListId}/items/${shoppingListItemId}`,
+        `/shopping-lists/${shoppingListId}/items/${shoppingListItemId}`,
         dto,
       );
       return response.data;
@@ -74,7 +74,7 @@ export class ShoppingListRemoteDataSource {
   async generateItemsFromLowStock(shoppingListId: number): Promise<ShoppingListDto> {
     try {
       const response = await axiosClient.post(
-        `/api/v1/shopping-lists/${shoppingListId}/generate-from-low-stock`,
+        `/shopping-lists/${shoppingListId}/generate-from-low-stock`,
       );
       return response.data;
     } catch (error: any) {
@@ -86,7 +86,7 @@ export class ShoppingListRemoteDataSource {
   async convertListToPurchase(shoppingListId: number): Promise<ShoppingListDto> {
     try {
       const response = await axiosClient.post(
-        `/api/v1/shopping-lists/${shoppingListId}/to-purchase`,
+        `/shopping-lists/${shoppingListId}/to-purchase`,
       );
       return response.data;
     } catch (error: any) {

@@ -162,23 +162,6 @@ export function RegisterScreen({ onRegister, onSwitchToLogin }: RegisterScreenPr
               <Text style={styles.submitButtonText}>Crear Cuenta</Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>O regístrate con</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <View style={styles.socialButtons}>
-            <TouchableOpacity style={styles.socialButton} activeOpacity={0.7}>
-              <Feather name="mail" size={20} color="#4285F4" />
-              <Text style={styles.socialButtonText}>Google</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton} activeOpacity={0.7}>
-              <Feather name="facebook" size={20} color="#1877F2" />
-              <Text style={styles.socialButtonText}>Facebook</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -313,40 +296,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#FFFFFF",
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#E5E7EB",
-  },
-  dividerText: {
-    fontSize: 14,
-    color: "#9CA3AF",
-  },
-  socialButtons: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    borderWidth: 2,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-  },
-  socialButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
   },
 })
