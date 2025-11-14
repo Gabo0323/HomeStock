@@ -25,32 +25,35 @@ export function RegisterScreen({ onRegister, onSwitchToLogin }: RegisterScreenPr
   })
 
   const handleSubmit = async () => {
-  try {
-    if (!formData.acceptTerms) {
-      alert("Debes aceptar los términos y condiciones");
-      return;
+    try {
+      if (!formData.acceptTerms) {
+        alert("Debes aceptar los términos y condiciones");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
+
+      const dto: RegisterDto = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password.trim(),
+      };
+
+      const user = await authViewModel.register(dto);
+      console.log("Usuario registrado:", user);
+
+      alert("Registro exitoso. Ahora puedes iniciar sesión.");
+      onSwitchToLogin(); // 👈 Redirigir al login
+
+    } catch (err: any) {
+      console.error("Error en registro:", err);
+      alert(err.message ?? "Error al registrar");
     }
+  };
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
-
-    const dto: RegisterDto = {
-      name: formData.name.trim(),
-      email: formData.email.trim().toLowerCase(),
-      password: formData.password.trim(),
-    };
-
-    const user = await authViewModel.register(dto);
-
-    console.log("Usuario registrado:", user);
-    onRegister(); // ← tu navegación ya existente
-  } catch (err: any) {
-    console.error("Error en registro:", err);
-    alert(err.message ?? "Error al registrar");
-  }
-};
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

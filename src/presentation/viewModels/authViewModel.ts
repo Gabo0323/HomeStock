@@ -18,6 +18,7 @@ export class AuthViewModel {
   private readonly refreshTokenUseCase: RefreshUseCase;
   private readonly logoutUseCase: LogoutUseCase;
   private readonly meUseCase: MeUseCase;
+  user: any;
 
   constructor(
     loginUseCase: LoginUseCase,

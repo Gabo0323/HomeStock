@@ -3,7 +3,7 @@ import { CreateInventoryItemDto } from "../dto/inventoryDto";
 
 export class InventoryRemoteDataSource {
   async getInventory(page: number, size: number) {
-    const response = await axiosClient.get(`/inventory?page=${page}&size=${size}`);
+    const response = await axiosClient.get(`/inventory?page=0&size=1000`);
     return response.data;
   }
 
